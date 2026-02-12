@@ -1,13 +1,6 @@
-# Options TODAY --- Public Dashboard
+# Options
 
-This repository hosts the **public-facing output** of the EMA Pullback
-Options workflow.
-
-It is automatically updated by a private GitHub Actions pipeline which
-publishes a curated **TODAY signal table** for viewing, dashboards, and
-GitHub Pages.
-
-------------------------------------------------------------------------
+This repository hosts the **public-facing output** of the Options workflow.
 
 ## Overview
 
@@ -18,15 +11,7 @@ The purpose of this repository is to provide:
 -   Daily high-signal option spread ideas
 -   A stable URL for external dashboards and tools
 
-The data here is **generated elsewhere** and pushed automatically.
 
-👉 Source table:
-
-    tables/TODAY.csv
-
-Raw URL:
-
-    https://raw.githubusercontent.com/aglucaci/options/main/tables/TODAY.csv
 
 ------------------------------------------------------------------------
 
