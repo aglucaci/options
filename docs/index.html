@@ -1,1 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Options TODAY Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b0f17; --panel:#0f1626; --panel2:#101a2e; --muted:#8aa0c6; --text:#e8eefc;
+      --line:#1d2a44; --accent:#7aa2ff; --good:#2ee59d; --warn:#ffd166; --bad:#ff5c7c;
+      --shadow: 0 10px 35px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.20), transparent 60%),
+                 radial-gradient(900px 600px at 110% 10%, rgba(46,229,157,.12), transparent 50%),
+                 var(--bg);
+      color:var(--text); font-family:var(--sans);
+    }
+    header{
+      padding:22px 18px 10px;
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(11,15,23,.92), rgba(11,15,23,.75));
+      border-bottom:1px solid rgba(29,42,68,.8);
+    }
+    .wrap{max-width:1200px; margin:0 auto}
+    .titlebar{display:flex; gap:14px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap}
+    h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .sub{margin:6px 0 0; color:var(--muted); font-size:12px}
+    .pillrow{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .pill{
+      font-size:12px; color:var(--muted);
+      padding:6px 10px; border:1px solid rgba(29,42,68,.9);
+      background:rgba(15,22,38,.55);
+      border-radius:999px;
+    }
+    .pill strong{color:var(--text); font-weight:600}
+    main{padding:14px 18px 34px}
+    .grid{display:grid; gap:12px}
+    @media (min-width: 980px){
+      .grid{grid-template-columns: 1.15fr .85fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(15,22,38,.86), rgba(15,22,38,.66));
+      border:1px solid rgba(29,42,68,.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:12px 12px 10px;
+      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      border-bottom:1px solid rgba(29,42,68,.7);
+      background: linear-gradient(180deg, rgba(16,26,46,.65), transparent);
+    }
+    .card .hd h2{margin:0; font-size:13px; color:#dbe7ff; letter-spacing:.2px}
+    .card .bd{padding:12px}
+    .controls{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 720px){ .controls{grid-template-columns:1fr} }
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+    input, select, button{
+      width:100%;
+      background:rgba(16,26,46,.55);
+      border:1px solid rgba(29,42,68,.95);
+      color:var(--text);
+      padding:10px 10px;
+      border-radius: 12px;
+      outline:none;
+    }
+    input::placeholder{color:rgba(138,160,198,.75)}
+    button{
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease;
+    }
+    button:hover{border-color: rgba(122,162,255,.65)}
+    button:active{transform: translateY(1px)}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap}
+    .btnrow button{width:auto; padding:10px 12px; font-size:12px}
+    .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+    @media (max-width: 980px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    .kpi{
+      padding:12px;
+      border-radius: 14px;
+      background:rgba(16,26,46,.45);
+      border:1px solid rgba(29,42,68,.8);
+    }
+    .kpi .k{color:var(--muted); font-size:12px}
+    .kpi .v{margin-top:6px; font-size:18px; font-weight:650; letter-spacing:.2px}
+    .kpi .s{margin-top:6px; font-size:11px; color:var(--muted)}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(29,42,68,.9); background:rgba(16,26,46,.45);
+      font-size:12px; color:var(--muted);
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:var(--muted)}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .tablewrap{
+      border-radius: 14px;
+      overflow:auto;
+      border:1px solid rgba(29,42,68,.8);
+      background:rgba(11,15,23,.35);
+    }
+    table{width:100%; border-collapse:collapse; min-width: 880px}
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(29,42,68,.65);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    th{
+      position:sticky; top:0;
+      background: rgba(15,22,38,.92);
+      color:#dbe7ff;
+      cursor:pointer;
+      user-select:none;
+    }
+    td{color:rgba(232,238,252,.92)}
+    tr:hover td{background: rgba(122,162,255,.06)}
+    .mono{font-family: var(--mono)}
+    .muted{color:var(--muted)}
+    .right{text-align:right}
+    .rank{
+      font-variant-numeric: tabular-nums;
+      font-family: var(--mono);
+      font-weight:700;
+      color:#dbe7ff;
+    }
+    .sig{font-family: var(--mono); font-variant-numeric: tabular-nums}
+    .sig.good{color:var(--good)}
+    .sig.warn{color:var(--warn)}
+    .sig.bad{color:var(--bad)}
+    .footer{margin-top:12px; color:var(--muted); font-size:12px}
+    .mini{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between
+    }
+    .spark{
+      width:100%; height:80px;
+      border-radius: 12px;
+      border:1px solid rgba(29,42,68,.8);
+      background: rgba(16,26,46,.35);
+      padding:8px;
+    }
+    .err{color: var(--bad); font-family: var(--mono); font-size:12px; white-space:pre-wrap}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="titlebar">
+      <div>
+        <h1>Options TODAY Dashboard</h1>
+        <div class="sub">
+          Source: <span class="mono" id="src"></span>
+        </div>
+      </div>
+      <div class="pillrow">
+        <span class="pill"><strong id="rowsP">0</strong> rows</span>
+        <span class="pill">Last loaded <strong id="loadedAt">—</strong></span>
+        <span class="pill">Top signals: <strong id="topMode">Smart Score</strong></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+    <!-- LEFT: Table -->
+    <section class="card">
+      <div class="hd">
+        <h2>Signal Board</h2>
+        <div class="mini">
+          <span class="badge"><span class="dot good"></span>Strong</span>
+          <span class="badge"><span class="dot warn"></span>Watch</span>
+          <span class="badge"><span class="dot bad"></span>Avoid</span>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="controls">
+          <div>
+            <label>Search (ticker / strategy / notes)</label>
+            <input id="q" placeholder="e.g., SPY, call, credit, 0.10 edge…" />
+          </div>
+          <div>
+            <label>Universe filter (column autodetect)</label>
+            <select id="tickerFilter">
+              <option value="">All tickers</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Rank by</label>
+            <select id="rankBy"></select>
+          </div>
+          <div>
+            <label>Show</label>
+            <select id="topN">
+              <option value="25">Top 25</option>
+              <option value="50" selected>Top 50</option>
+              <option value="100">Top 100</option>
+              <option value="999999">All</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Min “Signal” (0–100)</label>
+            <input id="minSignal" type="number" min="0" max="100" step="1" value="60" />
+          </div>
+          <div>
+            <label>Only “actionable” rows</label>
+            <select id="onlyActionable">
+              <option value="no">No</option>
+              <option value="yes" selected>Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btnrow" style="margin-top:10px">
+          <button id="reload">Reload CSV</button>
+          <button id="copyLink">Copy share link</button>
+          <button id="download">Download filtered CSV</button>
+        </div>
+
+        <div style="margin-top:12px" class="tablewrap">
+          <table id="tbl">
+            <thead><tr id="thead"></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          Tip: Click any column header to sort. The dashboard will auto-detect numeric columns and build a
+          “Smart Score” if your CSV doesn’t already contain a score/edge column.
+        </div>
+        <div id="err" class="err"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Insights -->
+    <aside class="card">
+      <div class="hd">
+        <h2>High-Signal Insights</h2>
+        <span class="badge"><span class="dot good"></span><span id="insightLabel">Live</span></span>
+      </div>
+      <div class="bd">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="k">Strong signals</div>
+            <div class="v" id="kStrong">0</div>
+            <div class="s" id="kStrongS">≥ 80 signal</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Watchlist</div>
+            <div class="v" id="kWatch">0</div>
+            <div class="s">60–79 signal</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Avoid</div>
+            <div class="v" id="kAvoid">0</div>
+            <div class="s">&lt; 60 signal</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Unique tickers</div>
+            <div class="v" id="kTick">0</div>
+            <div class="s">in filtered view</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card" style="box-shadow:none">
+          <div class="hd"><h2>Top 10 tickers by average signal</h2></div>
+          <div class="bd">
+            <div class="tablewrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th class="right">Avg Signal</th>
+                    <th class="right">Count</th>
+                  </tr>
+                </thead>
+                <tbody id="topTickers"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card" style="box-shadow:none">
+          <div class="hd"><h2>Signal distribution</h2></div>
+          <div class="bd">
+            <canvas id="spark" class="spark"></canvas>
+            <div class="footer muted" id="sparkNote"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card" style="box-shadow:none">
+          <div class="hd"><h2>Column intelligence</h2></div>
+          <div class="bd">
+            <div class="footer muted" id="colIntel"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+(() => {
+  const DEFAULT_URL = "https://raw.githubusercontent.com/aglucaci/options/refs/heads/main/tables/TODAY.csv";
+  const el = (id) => document.getElementById(id);
+
+  const state = {
+    url: DEFAULT_URL,
+    raw: [],
+    cols: [],
+    tickerCol: null,
+    numericCols: [],
+    rankCandidates: [],
+    sort: { col: null, dir: "desc" },
+  };
+
+  // -------- CSV parsing (robust, supports quoted commas) --------
+  function parseCSV(text) {
+    const rows = [];
+    let i=0, field="", row=[], inQuotes=false;
+    while (i < text.length) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"' && text[i+1] === '"') { field+='"'; i+=2; continue; }
+        if (c === '"') { inQuotes=false; i++; continue; }
+        field += c; i++; continue;
+      } else {
+        if (c === '"') { inQuotes=true; i++; continue; }
+        if (c === ',') { row.push(field); field=""; i++; continue; }
+        if (c === '\r') { i++; continue; }
+        if (c === '\n') { row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
+        field += c; i++; continue;
+      }
+    }
+    // last line
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    if (!rows.length) return { headers: [], data: [] };
+    const headers = rows[0].map(h => h.trim());
+    const data = rows.slice(1)
+      .filter(r => r.some(x => String(x||"").trim() !== ""))
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+        return obj;
+      });
+    return { headers, data };
+  }
+
+  function toNum(v) {
+    if (v == null) return null;
+    const s = String(v).trim();
+    if (!s) return null;
+    // strip % and commas and $ signs
+    const cleaned = s.replace(/[$,%]/g, "").replace(/,/g,"");
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function detectTickerCol(cols) {
+    const lower = cols.map(c => c.toLowerCase());
+    const candidates = ["ticker","symbol","underlying","asset"].map(x=>x.toLowerCase());
+    for (const cand of candidates) {
+      const idx = lower.indexOf(cand);
+      if (idx >= 0) return cols[idx];
+    }
+    // heuristic: first col with many short-uppercase tokens
+    let best = null, bestScore = -1;
+    for (const c of cols) {
+      const score = state.raw.slice(0,200).reduce((acc,r)=>{
+        const v = (r[c]||"").trim();
+        if (/^[A-Z]{1,6}$/.test(v)) acc++;
+        return acc;
+      },0);
+      if (score > bestScore) { bestScore = score; best = c; }
+    }
+    return bestScore >= 10 ? best : null;
+  }
+
+  function detectNumericCols(cols, rows) {
+    const nums = [];
+    for (const c of cols) {
+      let ok=0, total=0;
+      for (let i=0;i<Math.min(rows.length,300);i++) {
+        const n = toNum(rows[i][c]);
+        if (rows[i][c] !== "" && rows[i][c] != null) total++;
+        if (n != null) ok++;
+      }
+      // numeric if at least 60% of non-empty parse as number and there are enough samples
+      if (total >= 8 && ok/total >= 0.6) nums.push(c);
+    }
+    return nums;
+  }
+
+  // -------- Smart score construction --------
+  function pickRankCandidates(cols) {
+    const lc = cols.map(c=>c.toLowerCase());
+    const want = [
+      // highest-priority “signal-ish” names
+      ["signal","score","rank","edge","ev","expected_value","alpha"],
+      // common option spread terms that imply “better when higher”
+      ["prob","pop","pwin","win","return","roi","r","credit","premium","net_credit","theta"],
+      // “better when lower” (will be inverted)
+      ["risk","loss","drawdown","debit","cost","spread_cost","max_loss","vega","iv","implied_vol","delta"]
+    ];
+
+    const found = new Set();
+
+    // Exact/contains matches
+    for (const group of want) {
+      for (const key of group) {
+        for (let i=0;i<lc.length;i++) {
+          if (lc[i] === key || lc[i].includes(key)) found.add(cols[i]);
+        }
+      }
+    }
+
+    // Keep only numeric
+    const out = [...found].filter(c => state.numericCols.includes(c));
+
+    // Guarantee at least something: use first few numeric cols
+    if (out.length < 2) {
+      for (const c of state.numericCols.slice(0,6)) if (!out.includes(c)) out.push(c);
+    }
+    return out.slice(0,10);
+  }
+
+  function zscore(values) {
+    const finite = values.filter(v => Number.isFinite(v));
+    const n = finite.length;
+    if (n < 5) return { mean: 0, sd: 1 };
+    const mean = finite.reduce((a,b)=>a+b,0)/n;
+    const varr = finite.reduce((a,b)=>a + (b-mean)*(b-mean),0)/Math.max(1,(n-1));
+    const sd = Math.sqrt(varr) || 1;
+    return { mean, sd };
+  }
+
+  function buildSmartSignal(rows) {
+    // If a “signal/score” column already exists, just map it to 0–100 if needed.
+    const lc = state.cols.map(c=>c.toLowerCase());
+    const directIdx = lc.findIndex(c => c === "signal" || c.includes("signal") || c === "score" || c.includes("score"));
+    let directCol = directIdx >= 0 ? state.cols[directIdx] : null;
+    if (directCol && state.numericCols.includes(directCol)) {
+      const vals = rows.map(r => toNum(r[directCol])).filter(v => v != null);
+      const min = Math.min(...vals), max = Math.max(...vals);
+      rows.forEach(r => {
+        const v = toNum(r[directCol]);
+        r.__signal = (v == null) ? 0 : (max > min ? Math.max(0, Math.min(100, 100*(v-min)/(max-min))) : 50);
+      });
+      state.rankCandidates = ["__signal", directCol, ...state.rankCandidates.filter(x=>x!==directCol)];
+      el("topMode").textContent = directCol;
+      return;
+    }
+
+    // Otherwise compute from candidates using z-scores with inversion for “risk-like” columns.
+    const candidates = state.rankCandidates.length ? state.rankCandidates : pickRankCandidates(state.cols);
+    const invertKeys = ["risk","loss","drawdown","debit","cost","max_loss","iv","implied","delta","vega"];
+    const colStats = {};
+    candidates.forEach(c => {
+      const vals = rows.map(r => toNum(r[c])).map(v => v==null ? NaN : v);
+      colStats[c] = { ...zscore(vals), invert: invertKeys.some(k => c.toLowerCase().includes(k)) };
+    });
+
+    // weighted sum: equal weights for now, but “edge/ev/signal” gets a bit more
+    const w = {};
+    candidates.forEach(c => {
+      const name = c.toLowerCase();
+      let ww = 1.0;
+      if (name.includes("edge") || name.includes("ev") || name.includes("signal") || name.includes("score") || name.includes("alpha")) ww = 1.4;
+      if (name.includes("prob") || name.includes("pop") || name.includes("pwin") || name.includes("win")) ww = 1.2;
+      if (name.includes("risk") || name.includes("loss") || name.includes("debit") || name.includes("cost")) ww = 1.0; // (inverted later)
+      w[c] = ww;
+    });
+
+    // raw composite
+    const comp = rows.map(r => {
+      let num=0, den=0;
+      candidates.forEach(c => {
+        const v = toNum(r[c]);
+        if (v == null) return;
+        const st = colStats[c];
+        let z = (v - st.mean) / (st.sd || 1);
+        if (st.invert) z = -z;
+        num += w[c]*z;
+        den += w[c];
+      });
+      return den ? num/den : 0;
+    });
+
+    // map composite -> 0..100 with percentiles
+    const sorted = [...comp].sort((a,b)=>a-b);
+    const p = (x) => {
+      const idx = sorted.findIndex(v => v >= x);
+      return idx < 0 ? 1 : idx/(sorted.length-1 || 1);
+    };
+    rows.forEach((r, i) => r.__signal = Math.round(100 * p(comp[i])));
+
+    state.rankCandidates = ["__signal", ...candidates.filter(c=>c!=="__signal")];
+    el("topMode").textContent = "Smart Score";
+  }
+
+  function buildActionableFlag(rows) {
+    // Heuristic: “actionable” if signal high AND (has volume/oi filters satisfied if present)
+    const volCol = state.cols.find(c => c.toLowerCase().includes("vol") && state.numericCols.includes(c));
+    const oiCol  = state.cols.find(c => c.toLowerCase().includes("oi")  && state.numericCols.includes(c));
+    rows.forEach(r => {
+      const sig = r.__signal ?? 0;
+      let ok = sig >= 60;
+      if (volCol) {
+        const v = toNum(r[volCol]);
+        if (v != null && v < 25) ok = false;
+      }
+      if (oiCol) {
+        const v = toNum(r[oiCol]);
+        if (v != null && v < 20) ok = false;
+      }
+      r.__actionable = ok ? "YES" : "NO";
+    });
+  }
+
+  // -------- Rendering --------
+  function populateTickerFilter(rows) {
+    const sel = el("tickerFilter");
+    sel.innerHTML = `<option value="">All tickers</option>`;
+    if (!state.tickerCol) return;
+    const set = new Set(rows.map(r => (r[state.tickerCol]||"").trim()).filter(Boolean));
+    [...set].sort().forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t; opt.textContent = t;
+      sel.appendChild(opt);
+    });
+  }
+
+  function fmt(v) {
+    if (v == null) return "";
+    const s = String(v);
+    // right align numeric-looking
+    return s;
+  }
+
+  function classifySignal(sig) {
+    if (sig >= 80) return "good";
+    if (sig >= 60) return "warn";
+    return "bad";
+  }
+
+  function getFilterState() {
+    return {
+      q: el("q").value.trim().toLowerCase(),
+      ticker: el("tickerFilter").value.trim(),
+      topN: Number(el("topN").value),
+      minSignal: Math.max(0, Math.min(100, Number(el("minSignal").value || 0))),
+      onlyActionable: el("onlyActionable").value === "yes",
+      rankBy: el("rankBy").value
+    };
+  }
+
+  function applyFilters(rows) {
+    const f = getFilterState();
+    let out = rows;
+
+    if (f.q) {
+      out = out.filter(r => {
+        // search across all columns lightly
+        for (const c of state.cols) {
+          const v = (r[c] ?? "");
+          if (String(v).toLowerCase().includes(f.q)) return true;
+        }
+        return false;
+      });
+    }
+    if (f.ticker && state.tickerCol) {
+      out = out.filter(r => (r[state.tickerCol]||"").trim() === f.ticker);
+    }
+    out = out.filter(r => (r.__signal ?? 0) >= f.minSignal);
+    if (f.onlyActionable) out = out.filter(r => r.__actionable === "YES");
+
+    // sort
+    const col = f.rankBy || "__signal";
+    const dir = state.sort.col === col ? state.sort.dir : "desc";
+    out = [...out].sort((a,b) => {
+      const an = toNum(a[col]);
+      const bn = toNum(b[col]);
+      if (an != null && bn != null) return dir === "asc" ? an-bn : bn-an;
+      const as = String(a[col] ?? "");
+      const bs = String(b[col] ?? "");
+      return dir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
+    });
+
+    // top N
+    if (Number.isFinite(f.topN) && f.topN < out.length) out = out.slice(0, f.topN);
+    return out;
+  }
+
+  function renderTable(rows) {
+    const head = el("thead");
+    const body = el("tbody");
+    head.innerHTML = "";
+    body.innerHTML = "";
+
+    // Create display columns: rank + signal + actionable + ticker (if exists) + rest
+    const baseCols = [];
+    baseCols.push("__rank");
+    baseCols.push("__signal");
+    baseCols.push("__actionable");
+    if (state.tickerCol && !baseCols.includes(state.tickerCol)) baseCols.push(state.tickerCol);
+
+    const rest = state.cols.filter(c => !baseCols.includes(c));
+    const displayCols = [...baseCols, ...rest];
+
+    // header
+    displayCols.forEach(c => {
+      const th = document.createElement("th");
+      th.textContent = c === "__rank" ? "#" :
+                       c === "__signal" ? "Signal" :
+                       c === "__actionable" ? "Actionable" : c;
+      th.dataset.col = c;
+      th.onclick = () => {
+        // toggle sort direction if same column, else default desc
+        if (state.sort.col === c) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
+        else { state.sort.col = c; state.sort.dir = "desc"; }
+        // re-render via refresh
+        refresh();
+      };
+      head.appendChild(th);
+    });
+
+    // rows
+    rows.forEach((r, idx) => {
+      const tr = document.createElement("tr");
+      displayCols.forEach(c => {
+        const td = document.createElement("td");
+
+        if (c === "__rank") {
+          td.textContent = String(idx+1);
+          td.className = "rank";
+        } else if (c === "__signal") {
+          const sig = r.__signal ?? 0;
+          td.textContent = String(sig);
+          td.className = "sig " + classifySignal(sig) + " right";
+        } else if (c === "__actionable") {
+          td.textContent = r.__actionable || "NO";
+          td.className = "mono";
+        } else {
+          const v = r[c];
+          td.textContent = fmt(v);
+          if (state.numericCols.includes(c)) td.classList.add("right","mono");
+        }
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+
+    el("rowsP").textContent = String(rows.length);
+  }
+
+  function renderKPIs(rows) {
+    const strong = rows.filter(r => (r.__signal ?? 0) >= 80).length;
+    const watch  = rows.filter(r => (r.__signal ?? 0) >= 60 && (r.__signal ?? 0) < 80).length;
+    const avoid  = rows.filter(r => (r.__signal ?? 0) < 60).length;
+
+    el("kStrong").textContent = String(strong);
+    el("kWatch").textContent  = String(watch);
+    el("kAvoid").textContent  = String(avoid);
+
+    const tset = new Set();
+    if (state.tickerCol) rows.forEach(r => tset.add((r[state.tickerCol]||"").trim()));
+    el("kTick").textContent = String([...tset].filter(Boolean).length);
+
+    // top tickers by avg signal
+    const map = new Map();
+    if (state.tickerCol) {
+      rows.forEach(r => {
+        const t = (r[state.tickerCol]||"").trim();
+        if (!t) return;
+        const cur = map.get(t) || { sum:0, n:0 };
+        cur.sum += (r.__signal ?? 0);
+        cur.n += 1;
+        map.set(t, cur);
+      });
+    }
+    const top = [...map.entries()]
+      .map(([t,o]) => ({ t, avg: o.sum/o.n, n:o.n }))
+      .sort((a,b)=>b.avg-a.avg)
+      .slice(0,10);
+
+    const tb = el("topTickers");
+    tb.innerHTML = "";
+    top.forEach(x => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td class="mono">${x.t}</td><td class="right sig ${classifySignal(x.avg)}">${x.avg.toFixed(1)}</td><td class="right mono">${x.n}</td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderSpark(rows) {
+    const canvas = el("spark");
+    const ctx = canvas.getContext("2d");
+    // size canvas to CSS box
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0,0,rect.width,rect.height);
+
+    const vals = rows.map(r => r.__signal ?? 0);
+    if (!vals.length) {
+      el("sparkNote").textContent = "No rows in view.";
+      return;
+    }
+
+    // histogram bins 0..100
+    const bins = new Array(10).fill(0);
+    vals.forEach(v => {
+      const idx = Math.min(9, Math.max(0, Math.floor(v/10)));
+      bins[idx] += 1;
+    });
+    const max = Math.max(...bins) || 1;
+
+    // draw bars
+    const pad = 10, w = rect.width - pad*2, h = rect.height - pad*2;
+    const bw = w / bins.length;
+
+    // grid
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgba(29,42,68,.8)";
+    ctx.lineWidth = 1;
+    for (let i=0;i<=4;i++){
+      const y = pad + (h*(i/4));
+      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(pad+w, y); ctx.stroke();
+    }
+
+    for (let i=0;i<bins.length;i++){
+      const x = pad + i*bw + 2;
+      const barh = h * (bins[i]/max);
+      const y = pad + (h - barh);
+
+      // bar color by bin zone
+      const mid = i*10 + 5;
+      let col = "rgba(138,160,198,.55)";
+      if (mid >= 80) col = "rgba(46,229,157,.75)";
+      else if (mid >= 60) col = "rgba(255,209,102,.75)";
+      else col = "rgba(255,92,124,.70)";
+
+      ctx.fillStyle = col;
+      ctx.fillRect(x, y, bw-4, barh);
+    }
+
+    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+    el("sparkNote").textContent = `Avg signal in view: ${avg.toFixed(1)} • Rows: ${vals.length}`;
+  }
+
+  function renderColumnIntel() {
+    const picks = state.rankCandidates.filter(c => c !== "__signal").slice(0,6);
+    const tcol = state.tickerCol ? `Ticker column: <span class="mono">${state.tickerCol}</span>` : `Ticker column: <span class="mono">not detected</span>`;
+    const ncols = state.numericCols.length ? `Numeric columns detected: <span class="mono">${state.numericCols.length}</span>` : `Numeric columns detected: <span class="mono">0</span>`;
+    const used = picks.length ? `Score inputs: <span class="mono">${picks.join(", ")}</span>` : `Score inputs: <span class="mono">(none)</span>`;
+    el("colIntel").innerHTML = `${tcol}<br/>${ncols}<br/>${used}`;
+  }
+
+  function setRankByOptions() {
+    const sel = el("rankBy");
+    sel.innerHTML = "";
+    const opts = state.rankCandidates.length ? state.rankCandidates : ["__signal"];
+    opts.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = (c === "__signal") ? "Signal (0–100)" : c;
+      sel.appendChild(opt);
+    });
+    sel.value = "__signal";
+  }
+
+  function makeShareLink() {
+    const f = getFilterState();
+    const params = new URLSearchParams();
+    params.set("q", f.q);
+    if (f.ticker) params.set("t", f.ticker);
+    params.set("n", String(f.topN));
+    params.set("m", String(f.minSignal));
+    params.set("a", f.onlyActionable ? "1" : "0");
+    params.set("r", f.rankBy || "__signal");
+    const u = new URL(window.location.href);
+    u.search = params.toString();
+    return u.toString();
+  }
+
+  function applyFromQueryString() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("q")) el("q").value = params.get("q") || "";
+    if (params.has("n")) el("topN").value = params.get("n") || "50";
+    if (params.has("m")) el("minSignal").value = params.get("m") || "60";
+    if (params.has("a")) el("onlyActionable").value = (params.get("a") === "1") ? "yes" : "no";
+    // ticker + rankBy applied after load
+  }
+
+  // -------- Main flow --------
+  async function load() {
+    el("err").textContent = "";
+    el("src").textContent = state.url;
+
+    const r = await fetch(state.url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
+    const text = await r.text();
+
+    const { headers, data } = parseCSV(text);
+    if (!headers.length || !data.length) throw new Error("CSV appears empty or could not be parsed.");
+
+    state.cols = headers;
+    state.raw = data;
+    state.tickerCol = detectTickerCol(state.cols);
+    state.numericCols = detectNumericCols(state.cols, state.raw);
+
+    state.rankCandidates = pickRankCandidates(state.cols);
+    buildSmartSignal(state.raw);
+    buildActionableFlag(state.raw);
+
+    populateTickerFilter(state.raw);
+    setRankByOptions();
+    renderColumnIntel();
+
+    // apply qs after controls exist
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("t") && state.tickerCol) el("tickerFilter").value = params.get("t") || "";
+    if (params.has("r")) el("rankBy").value = params.get("r") || "__signal";
+  }
+
+  function refresh() {
+    const view = applyFilters(state.raw);
+
+    renderTable(view);
+    renderKPIs(view);
+    renderSpark(view);
+
+    el("loadedAt").textContent = new Date().toLocaleString();
+    el("insightLabel").textContent = "Live";
+
+    // update sort to active selection
+    const f = getFilterState();
+    if (state.sort.col == null) state.sort.col = f.rankBy || "__signal";
+  }
+
+  function downloadFilteredCSV() {
+    const view = applyFilters(state.raw);
+    const cols = ["Signal","Actionable"].concat(state.tickerCol ? [state.tickerCol] : []).concat(state.cols.filter(c => c !== state.tickerCol));
+    const headerLine = cols.join(",");
+    const lines = [headerLine];
+
+    view.forEach(r => {
+      const row = [];
+      cols.forEach(c => {
+        let v = "";
+        if (c === "Signal") v = String(r.__signal ?? "");
+        else if (c === "Actionable") v = String(r.__actionable ?? "");
+        else v = String(r[c] ?? "");
+        // escape quotes
+        if (v.includes('"') || v.includes(",") || v.includes("\n")) v = `"${v.replace(/"/g,'""')}"`;
+        row.push(v);
+      });
+      lines.push(row.join(","));
+    });
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `TODAY_filtered_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  // -------- Wire up --------
+  ["q","tickerFilter","rankBy","topN","minSignal","onlyActionable"].forEach(id => {
+    el(id).addEventListener("input", refresh);
+    el(id).addEventListener("change", refresh);
+  });
+
+  el("reload").onclick = async () => {
+    el("insightLabel").textContent = "Loading…";
+    try { await load(); refresh(); }
+    catch (e) { el("err").textContent = String(e && e.stack ? e.stack : e); el("insightLabel").textContent = "Error"; }
+  };
+
+  el("copyLink").onclick = async () => {
+    const link = makeShareLink();
+    try {
+      await navigator.clipboard.writeText(link);
+      el("insightLabel").textContent = "Link copied";
+      setTimeout(()=>el("insightLabel").textContent="Live", 1200);
+    } catch {
+      prompt("Copy link:", link);
+    }
+  };
+
+  el("download").onclick = downloadFilteredCSV;
+
+  // init
+  applyFromQueryString();
+  (async () => {
+    try {
+      await load();
+      refresh();
+    } catch (e) {
+      el("err").textContent = String(e && e.stack ? e.stack : e);
+      el("insightLabel").textContent = "Error";
+    }
+  })();
+
+  // re-render spark on resize
+  let t=null;
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(refresh, 120);
+  });
+})();
+</script>
+</body>
+</html>
 
