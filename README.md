@@ -13,6 +13,10 @@ The purpose of this repository is to provide:
 -   Daily high-signal option spread ideas
 -   A stable URL for external dashboards and tools
 
+------------------------------------------------------------------------
+
+## Dashboard
+
 https://aglucaci.github.io/options/
 
 ------------------------------------------------------------------------
