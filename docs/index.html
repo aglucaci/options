@@ -3,356 +3,497 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options TODAY — Signal Dashboard</title>
+  <title>Options Volume Leaders — TODAY</title>
   <style>
     :root{
-      --bg:#0b0f17; --panel:#0f1626; --panel2:#101a2e; --muted:#8aa0c6; --text:#e8eefc;
-      --line:#1d2a44; --accent:#7aa2ff; --good:#2ee59d; --warn:#ffd166; --bad:#ff5c7c;
-      --shadow: 0 10px 35px rgba(0,0,0,.35); --radius: 16px;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --line2:#d1d5db;
+      --blue:#1d4ed8;
+      --blue2:#2563eb;
+      --blueSoft:#eff6ff;
+      --green:#059669;
+      --red:#dc2626;
+      --amber:#d97706;
+      --shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+      --radius: 14px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.20), transparent 60%),
-        radial-gradient(900px 600px at 110% 10%, rgba(46,229,157,.12), transparent 50%),
-        var(--bg);
-      color:var(--text); font-family:var(--sans);
+      font-family: var(--sans);
+      color:var(--text);
+      background:var(--bg);
     }
-    header{
-      padding:20px 18px 10px; position:sticky; top:0; z-index:10;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(11,15,23,.92), rgba(11,15,23,.74));
-      border-bottom:1px solid rgba(29,42,68,.85);
+
+    /* Top bar */
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      background:#0b1220;
+      color:#e5e7eb;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .wrap{max-width:1280px; margin:0 auto}
-    .titlebar{display:flex; gap:14px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap}
-    h1{margin:0; font-size:18px; letter-spacing:.2px}
-    .sub{margin:6px 0 0; color:var(--muted); font-size:12px}
-    .pillrow{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .pill{
-      font-size:12px; color:var(--muted);
-      padding:6px 10px; border:1px solid rgba(29,42,68,.9);
-      background:rgba(15,22,38,.55);
+    .topbar .wrap{
+      max-width: 1280px;
+      margin:0 auto;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; letter-spacing:.2px;
+    }
+    .brand .logo{
+      width:28px; height:28px; border-radius:8px;
+      background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+      display:inline-block;
+      box-shadow: 0 8px 20px rgba(29,78,216,.35);
+    }
+    .topmeta{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      font-size:12px; color:#cbd5e1;
+    }
+    .chip{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      white-space:nowrap;
+    }
+    .chip strong{color:#fff}
+
+    /* Page header + tabs */
+    .wrap{max-width:1280px; margin:0 auto; padding:16px}
+    .pageHead{
+      display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;
+      margin-top:6px;
+    }
+    h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+    .sub a{color:var(--blue); text-decoration:none}
+    .sub a:hover{text-decoration:underline}
+
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .tab{
+      font-size:12px;
+      padding:8px 12px;
       border-radius:999px;
+      border:1px solid var(--line);
+      background: var(--card);
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
     }
-    .pill strong{color:var(--text); font-weight:650}
-    main{padding:14px 18px 34px}
-    .grid{display:grid; gap:12px}
-    @media (min-width: 1050px){
-      .grid{grid-template-columns: 1.1fr .9fr}
+    .tab.active{
+      background: var(--blueSoft);
+      color: var(--blue);
+      border-color: #c7d2fe;
+      font-weight:650;
     }
-    .card{
-      background: linear-gradient(180deg, rgba(15,22,38,.86), rgba(15,22,38,.66));
-      border:1px solid rgba(29,42,68,.95);
+
+    /* Controls panel */
+    .panel{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top:12px;
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(#ffffff, #fafafa);
+      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .panel .hd .title{
+      font-size:13px;
+      font-weight:700;
+      display:flex; gap:10px; align-items:center;
+    }
+    .pill{
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color: var(--muted);
+      background:#fff;
+    }
+    .panel .bd{padding:12px}
+
+    .controls{
+      display:grid;
+      grid-template-columns: 1.2fr .7fr .7fr .7fr .7fr .6fr;
+      gap:10px;
+    }
+    @media (max-width: 1100px){
+      .controls{grid-template-columns: 1fr 1fr 1fr}
+    }
+    @media (max-width: 720px){
+      .controls{grid-template-columns: 1fr}
+    }
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+    input, select, button{
+      width:100%;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid var(--line2);
+      background:#fff;
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    input::placeholder{color:#9ca3af}
+    input:focus, select:focus{
+      border-color:#93c5fd;
+      box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+    }
+    .btnrow{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .btn{
+      width:auto;
+      background: var(--blue);
+      color:#fff;
+      border-color: var(--blue);
+      font-weight:650;
+      cursor:pointer;
+    }
+    .btn:hover{background:var(--blue2); border-color:var(--blue2)}
+    .btn.secondary{
+      background:#fff; color:var(--blue);
+      border-color:#c7d2fe;
+    }
+    .btn.secondary:hover{background:var(--blueSoft)}
+    .btn.ghost{
+      background:#fff; color:var(--text);
+      border-color: var(--line);
+      font-weight:600;
+    }
+
+    /* KPI strip */
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width: 1100px){ .kpis{grid-template-columns: repeat(3, 1fr)} }
+    @media (max-width: 720px){ .kpis{grid-template-columns: repeat(2, 1fr)} }
+    .kpi{
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background:#fff;
+      padding:10px 12px;
+    }
+    .kpi .k{font-size:11px; color:var(--muted)}
+    .kpi .v{margin-top:6px; font-size:18px; font-weight:800; font-family: var(--mono)}
+    .kpi .s{margin-top:6px; font-size:11px; color:var(--muted)}
+
+    /* Table */
+    .tableWrap{
+      margin-top:12px;
+      background:#fff;
+      border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .card .hd{
-      padding:12px 12px 10px;
-      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
-      border-bottom:1px solid rgba(29,42,68,.7);
-      background: linear-gradient(180deg, rgba(16,26,46,.65), transparent);
+    .tableTop{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      background: linear-gradient(#ffffff, #fafafa);
     }
-    .card .hd h2{margin:0; font-size:13px; color:#dbe7ff; letter-spacing:.2px}
-    .card .bd{padding:12px}
-    .controls{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    @media (max-width: 860px){ .controls{grid-template-columns:1fr} }
-    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
-    input, select, button{
-      width:100%;
-      background:rgba(16,26,46,.55);
-      border:1px solid rgba(29,42,68,.95);
-      color:var(--text);
-      padding:10px 10px;
-      border-radius: 12px;
-      outline:none;
-    }
-    input::placeholder{color:rgba(138,160,198,.75)}
-    button{cursor:pointer; transition: transform .05s ease, border-color .15s ease}
-    button:hover{border-color: rgba(122,162,255,.65)}
-    button:active{transform: translateY(1px)}
-    .btnrow{display:flex; gap:10px; flex-wrap:wrap}
-    .btnrow button{width:auto; padding:10px 12px; font-size:12px}
-    .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
-    @media (max-width: 1050px){ .kpis{grid-template-columns:repeat(2,1fr)} }
-    .kpi{
-      padding:12px;
-      border-radius: 14px;
-      background:rgba(16,26,46,.45);
-      border:1px solid rgba(29,42,68,.8);
-    }
-    .kpi .k{color:var(--muted); font-size:12px}
-    .kpi .v{margin-top:6px; font-size:18px; font-weight:700; letter-spacing:.2px; font-family: var(--mono)}
-    .kpi .s{margin-top:6px; font-size:11px; color:var(--muted)}
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(29,42,68,.9); background:rgba(16,26,46,.45);
+    .tableTop .left{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
       font-size:12px; color:var(--muted);
     }
-    .dot{width:8px; height:8px; border-radius:999px; background:var(--muted)}
-    .dot.good{background:var(--good)}
-    .dot.warn{background:var(--warn)}
-    .dot.bad{background:var(--bad)}
-    .tablewrap{
-      border-radius: 14px;
-      overflow:auto;
-      border:1px solid rgba(29,42,68,.8);
-      background:rgba(11,15,23,.35);
+    .tableTop .right{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
     }
-    table{width:100%; border-collapse:collapse; min-width: 980px}
-    th, td{
-      padding:10px 10px;
-      border-bottom:1px solid rgba(29,42,68,.65);
-      font-size:12px;
-      white-space:nowrap;
-      vertical-align:top;
-    }
-    th{
+    .smallSelect{padding:8px 10px; font-size:12px}
+    .smallInput{padding:8px 10px; font-size:12px}
+
+    table{width:100%; border-collapse:collapse; min-width: 1100px}
+    thead th{
       position:sticky; top:0;
-      background: rgba(15,22,38,.92);
-      color:#dbe7ff;
+      background:#fff;
+      border-bottom:1px solid var(--line2);
+      color:#111827;
+      font-size:12px;
+      text-align:left;
+      padding:10px 10px;
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
-    td{color:rgba(232,238,252,.92)}
-    tr:hover td{background: rgba(122,162,255,.06)}
-    .mono{font-family: var(--mono)}
-    .muted{color:var(--muted)}
+    tbody td{
+      border-bottom:1px solid var(--line);
+      padding:10px 10px;
+      font-size:12px;
+      color:#111827;
+      vertical-align:top;
+      white-space:nowrap;
+    }
+    tbody tr:nth-child(even){background:#fbfbfd}
+    tbody tr:hover{background: #f1f5ff}
     .right{text-align:right}
-    .rank{font-family: var(--mono); font-weight:800; color:#dbe7ff}
-    .sig{font-family: var(--mono); font-variant-numeric: tabular-nums}
-    .sig.good{color:var(--good)}
-    .sig.warn{color:var(--warn)}
-    .sig.bad{color:var(--bad)}
-    .pillSm{
-      display:inline-block; padding:2px 8px; border-radius:999px;
-      border:1px solid rgba(29,42,68,.8); background:rgba(16,26,46,.35);
-      color:var(--muted); font-size:11px;
+    .mono{font-family: var(--mono)}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-size:11px;
+      color:var(--muted);
+      background:#fff;
     }
-    .footer{margin-top:12px; color:var(--muted); font-size:12px}
-    .spark{
-      width:100%; height:220px;
-      border-radius: 12px;
-      border:1px solid rgba(29,42,68,.8);
-      background: rgba(16,26,46,.35);
-      padding:8px;
+    .dot{width:7px;height:7px;border-radius:999px;background:#9ca3af}
+    .dot.g{background:var(--green)}
+    .dot.r{background:var(--red)}
+    .dot.a{background:var(--amber)}
+
+    .sig{
+      font-weight:800;
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
     }
-    .err{color: var(--bad); font-family: var(--mono); font-size:12px; white-space:pre-wrap}
-    .tiny{font-size:11px}
-    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    @media (max-width: 900px){ .grid2{grid-template-columns:1fr} }
-    a{color:var(--accent); text-decoration:none}
-    a:hover{text-decoration:underline}
+    .sig.g{color:var(--green)}
+    .sig.r{color:var(--red)}
+    .sig.a{color:var(--amber)}
+
+    .muted{color:var(--muted)}
+    .wrapScroll{overflow:auto}
+
+    /* Density */
+    body.compact tbody td, body.compact thead th{padding:7px 8px}
+    body.compact tbody td{font-size:11px}
+    body.compact thead th{font-size:11px}
+
+    .err{
+      margin-top:10px;
+      padding:10px 12px;
+      border:1px solid #fecaca;
+      background:#fff1f2;
+      color:#991b1b;
+      border-radius:12px;
+      font-family: var(--mono);
+      font-size:12px;
+      white-space:pre-wrap;
+      display:none;
+    }
   </style>
 </head>
-
 <body>
-<header>
-  <div class="wrap">
-    <div class="titlebar">
-      <div>
-        <h1>Options TODAY — Signal Dashboard</h1>
-        <div class="sub">
-          CSV: <span class="mono" id="src"></span>
-        </div>
+
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <span class="logo"></span>
+        <span>Options Dashboard</span>
       </div>
-      <div class="pillrow">
-        <span class="pill"><strong id="rowsP">0</strong> rows</span>
-        <span class="pill">Filtered <strong id="rowsF">0</strong></span>
-        <span class="pill">Loaded <strong id="loadedAt">—</strong></span>
+      <div class="topmeta">
+        <span class="chip">Rows <strong id="rowsAll">0</strong></span>
+        <span class="chip">Showing <strong id="rowsShown">0</strong></span>
+        <span class="chip">Updated <strong id="loadedAt">—</strong></span>
       </div>
     </div>
   </div>
-</header>
 
-<main>
-  <div class="wrap grid">
-    <!-- LEFT: table -->
-    <section class="card">
-      <div class="hd">
-        <h2>Signal Board</h2>
-        <div class="pillrow">
-          <span class="badge"><span class="dot good"></span>Strong</span>
-          <span class="badge"><span class="dot warn"></span>Watch</span>
-          <span class="badge"><span class="dot bad"></span>Avoid</span>
+  <div class="wrap">
+    <div class="pageHead">
+      <div>
+        <h1>Options Volume Leaders — TODAY</h1>
+        <div class="sub">
+          CSV source:
+          <a id="srcLink" href="#" target="_blank" rel="noreferrer">TODAY.csv</a>
         </div>
       </div>
+
+      <div class="tabs" role="tablist" aria-label="Views">
+        <div class="tab active" id="tab-leaders">Leaders</div>
+        <div class="tab" id="tab-setups">Setups</div>
+        <div class="tab" id="tab-risk">Risk</div>
+        <div class="tab" id="tab-rules">Rules</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="hd">
+        <div class="title">
+          Filters
+          <span class="pill" id="hintPill">Ranked by Signal</span>
+        </div>
+        <div class="muted" style="font-size:12px">
+          Tip: click a column header to sort
+        </div>
+      </div>
+
       <div class="bd">
         <div class="controls">
           <div>
-            <label>Search (ticker / symbols / rules / reason)</label>
-            <input id="q" placeholder="e.g., SPY, pullback, EMA21, QQQ…" />
+            <label>Search</label>
+            <input id="q" placeholder="ticker, setup_type, symbols, entry_rule…" />
           </div>
-
           <div>
             <label>Ticker</label>
-            <select id="ticker">
-              <option value="">All</option>
-            </select>
+            <select id="ticker"><option value="">All</option></select>
           </div>
-
           <div>
             <label>Spread</label>
-            <select id="spread">
-              <option value="">All</option>
-            </select>
+            <select id="spread"><option value="">All</option></select>
           </div>
-
           <div>
             <label>Setup type</label>
-            <select id="setupType">
-              <option value="">All</option>
+            <select id="setupType"><option value="">All</option></select>
+          </div>
+          <div>
+            <label>Setup</label>
+            <select id="setupOnly">
+              <option value="yes" selected>YES only</option>
+              <option value="no">All rows</option>
             </select>
           </div>
-
-          <div class="grid2">
-            <div>
-              <label>Setup = YES (default)</label>
-              <select id="setupOnly">
-                <option value="yes" selected>YES only</option>
-                <option value="no">All rows</option>
-              </select>
-            </div>
-            <div>
-              <label>Status</label>
-              <select id="status">
-                <option value="">All</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid2">
-            <div>
-              <label>Min Edge</label>
-              <input id="minEdge" type="number" step="0.01" value="0.00" />
-            </div>
-            <div>
-              <label>Min POP</label>
-              <input id="minPop" type="number" step="0.01" value="0.00" />
-            </div>
+          <div>
+            <label>Status</label>
+            <select id="status"><option value="">All</option></select>
           </div>
 
           <div>
-            <label>Show</label>
-            <select id="topN">
-              <option value="25">Top 25</option>
-              <option value="50" selected>Top 50</option>
-              <option value="100">Top 100</option>
-              <option value="999999">All</option>
-            </select>
+            <label>Min Edge</label>
+            <input id="minEdge" type="number" step="0.01" value="-1.00" />
           </div>
-
+          <div>
+            <label>Min POP</label>
+            <input id="minPop" type="number" step="0.01" value="0.00" />
+          </div>
+          <div>
+            <label>DTE ≤</label>
+            <input id="maxDte" type="number" step="1" value="9999" />
+          </div>
           <div>
             <label>Rank by</label>
             <select id="rankBy">
-              <option value="signal" selected>Signal (composite)</option>
+              <option value="signal" selected>Signal</option>
               <option value="edge">Edge</option>
               <option value="pop">POP</option>
-              <option value="bs_spread">BS Spread</option>
               <option value="spread_mid">Spread Mid</option>
               <option value="dte">DTE</option>
             </select>
           </div>
+          <div>
+            <label>Rows per page</label>
+            <select id="pageSize">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div>
+            <label>Density</label>
+            <select id="density">
+              <option value="comfortable" selected>Comfortable</option>
+              <option value="compact">Compact</option>
+            </select>
+          </div>
         </div>
 
-        <div class="btnrow" style="margin-top:10px">
-          <button id="reload">Reload CSV</button>
-          <button id="copyLink">Copy share link</button>
-          <button id="download">Download filtered CSV</button>
+        <div class="btnrow">
+          <button class="btn" id="reload">Reload</button>
+          <button class="btn secondary" id="download">Download filtered CSV</button>
+          <button class="btn ghost" id="copyLink">Copy share link</button>
+          <button class="btn ghost" id="reset">Reset filters</button>
         </div>
 
-        <div style="margin-top:12px" class="tablewrap">
-          <table>
-            <thead><tr id="thead"></tr></thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-
-        <div class="footer">
-          “Signal” is a modern composite optimized for fast scanning: it rewards higher <span class="mono">edge</span> and <span class="mono">pop</span>,
-          and lightly penalizes higher <span class="mono">spread_mid</span> and longer <span class="mono">dte</span>.
-          Tune filters above to match your execution constraints.
-        </div>
-
-        <div id="err" class="err"></div>
-      </div>
-    </section>
-
-    <!-- RIGHT: insights + plots -->
-    <aside class="card">
-      <div class="hd">
-        <h2>High-Signal Insights</h2>
-        <span class="badge"><span class="dot good"></span><span id="insightLabel">Live</span></span>
-      </div>
-      <div class="bd">
         <div class="kpis">
           <div class="kpi">
-            <div class="k">Strong</div>
+            <div class="k">Strong (≥80)</div>
             <div class="v" id="kStrong">0</div>
-            <div class="s">Signal ≥ 80</div>
+            <div class="s">signal bucket</div>
           </div>
           <div class="kpi">
-            <div class="k">Watch</div>
+            <div class="k">Watch (60–79)</div>
             <div class="v" id="kWatch">0</div>
-            <div class="s">60–79</div>
+            <div class="s">signal bucket</div>
           </div>
           <div class="kpi">
-            <div class="k">Avoid</div>
+            <div class="k">Avoid (&lt;60)</div>
             <div class="v" id="kAvoid">0</div>
-            <div class="s">&lt; 60</div>
+            <div class="s">signal bucket</div>
           </div>
           <div class="kpi">
-            <div class="k">Avg Signal</div>
-            <div class="v" id="kAvg">0.0</div>
-            <div class="s">in filtered view</div>
+            <div class="k">Avg Edge</div>
+            <div class="v" id="kEdge">0.000</div>
+            <div class="s">filtered view</div>
+          </div>
+          <div class="kpi">
+            <div class="k">Avg POP</div>
+            <div class="v" id="kPop">0.000</div>
+            <div class="s">filtered view</div>
           </div>
         </div>
 
-        <div style="margin-top:12px" class="card" style="box-shadow:none">
-          <div class="hd"><h2>Edge vs POP (bubble = |edge|)</h2></div>
-          <div class="bd">
-            <canvas id="scatter" class="spark"></canvas>
-            <div class="footer tiny muted" id="scatterNote"></div>
-          </div>
-        </div>
+        <div class="err" id="err"></div>
+      </div>
+    </div>
 
-        <div style="margin-top:12px" class="card" style="box-shadow:none">
-          <div class="hd"><h2>Top 10 by signal</h2></div>
-          <div class="bd">
-            <div class="tablewrap">
-              <table style="min-width: 0">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Ticker</th>
-                    <th>Spread</th>
-                    <th class="right">Signal</th>
-                    <th class="right">Edge</th>
-                    <th class="right">POP</th>
-                  </tr>
-                </thead>
-                <tbody id="top10"></tbody>
-              </table>
-            </div>
-          </div>
+    <div class="tableWrap">
+      <div class="tableTop">
+        <div class="left">
+          <span class="badge"><span class="dot g"></span>Strong</span>
+          <span class="badge"><span class="dot a"></span>Watch</span>
+          <span class="badge"><span class="dot r"></span>Avoid</span>
+          <span class="muted" id="sortNote"></span>
         </div>
-
-        <div style="margin-top:12px" class="footer muted">
-          Raw CSV endpoint is ideal for embedding in other dashboards and automations.
+        <div class="right">
+          <button class="btn ghost" id="prev">Prev</button>
+          <span class="mono muted" id="pageNote">Page 1</span>
+          <button class="btn ghost" id="next">Next</button>
         </div>
       </div>
-    </aside>
+
+      <div class="wrapScroll">
+        <table>
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sub" style="margin-top:12px">
+      This page is a lightweight, self-contained dashboard (no external JS libs). It reads the published
+      <span class="mono">tables/TODAY.csv</span> file and provides filters + sorting + pagination.
+    </div>
   </div>
-</main>
 
 <script>
 (() => {
-  // Update this if your raw URL changes
+  // Your live CSV
   const DEFAULT_URL = "https://raw.githubusercontent.com/aglucaci/options/refs/heads/main/tables/TODAY.csv";
 
   const $ = (id) => document.getElementById(id);
@@ -360,10 +501,13 @@
   const state = {
     url: DEFAULT_URL,
     rows: [],
-    cols: [],
-    sort: { col: "signal", dir: "desc" },
+    sort: { key: "signal", dir: "desc" },
+    page: 1,
+    pageSize: 25,
+    activeTab: "leaders"
   };
 
+  function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function toNum(v){
     if (v == null) return null;
     const s = String(v).trim();
@@ -372,8 +516,6 @@
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : null;
   }
-
-  // Robust CSV parser (handles quotes)
   function parseCSV(text){
     const rows = [];
     let i=0, field="", row=[], inQ=false;
@@ -405,65 +547,48 @@
     return { headers, data };
   }
 
-  // Composite signal tuned to your schema:
-  // + edge (higher better), + pop (higher better)
-  // - spread_mid (higher capital at risk / cost), - dte (longer tie-up)
-  // For credit spreads, negative spread_mid isn't expected here; still works.
+  // Composite signal tailored to your schema (fast scan):
+  // + edge, + pop, small penalty for big spread_mid and long dte
   function computeSignal(r){
     const edge = toNum(r.edge) ?? 0;
     const pop  = toNum(r.pop) ?? 0;
     const mid  = toNum(r.spread_mid) ?? 0;
     const dte  = toNum(r.dte) ?? 0;
 
-    // Map typical ranges to comparable scale:
-    // edge: assume roughly [-0.5..+0.5] in practice -> emphasize
-    const edgeScore = Math.max(-1, Math.min(1, edge / 0.25)); // +/-0.25 -> +/-1
-    // pop: roughly [0..1]
-    const popScore = Math.max(0, Math.min(1, pop)) * 2 - 1;   // 0..1 -> -1..+1
-    // mid: penalize large debit/credit magnitude; assume 0..5 typical
-    const midScore = -Math.max(0, Math.min(1, mid / 3.0));    // 0..3 -> 0..-1
-    // dte: penalize long tie-up; assume 0..120 typical
-    const dteScore = -Math.max(0, Math.min(1, dte / 90.0));   // 0..90 -> 0..-1
+    const edgeScore = Math.max(-1, Math.min(1, edge / 0.25));       // +/-0.25 edge -> +/-1
+    const popScore  = (Math.max(0, Math.min(1, pop)) * 2) - 1;      // 0..1 -> -1..+1
+    const midScore  = -Math.max(0, Math.min(1, mid / 3.0));         // 0..3 -> 0..-1
+    const dteScore  = -Math.max(0, Math.min(1, dte / 90.0));        // 0..90 -> 0..-1
 
-    // weights: edge > pop > mid > dte
-    const raw = 0.48*edgeScore + 0.34*popScore + 0.12*midScore + 0.06*dteScore;
-
-    // Convert raw [-1..+1] approx -> [0..100]
-    const sig = Math.round(50 + 50 * Math.max(-1, Math.min(1, raw)));
-    return sig;
+    const raw = 0.50*edgeScore + 0.34*popScore + 0.10*midScore + 0.06*dteScore;
+    return Math.round(50 + 50 * Math.max(-1, Math.min(1, raw)));
   }
 
-  function classify(sig){
-    if (sig >= 80) return "good";
-    if (sig >= 60) return "warn";
-    return "bad";
+  function bucket(sig){
+    if (sig >= 80) return "g";
+    if (sig >= 60) return "a";
+    return "r";
   }
 
-  function uniqueSorted(values){
-    return [...new Set(values.filter(v => v != null && String(v).trim() !== ""))].sort();
+  function uniq(arr){
+    return [...new Set(arr.filter(v => String(v ?? "").trim() !== ""))].sort();
   }
 
-  function setOptions(){
-    // ticker/spread/setupType/status
-    const tick = uniqueSorted(state.rows.map(r => r.ticker));
-    const spr  = uniqueSorted(state.rows.map(r => r.spread));
-    const stp  = uniqueSorted(state.rows.map(r => r.setup_type));
-    const stat = uniqueSorted(state.rows.map(r => r.status));
+  function setSelectOptions(){
+    const tick = uniq(state.rows.map(r => r.ticker));
+    const spr  = uniq(state.rows.map(r => r.spread));
+    const stp  = uniq(state.rows.map(r => r.setup_type));
+    const stat = uniq(state.rows.map(r => r.status));
 
-    const fill = (sel, arr) => {
+    const fill = (sel, values) => {
       const cur = sel.value;
-      sel.innerHTML = `<option value="">All</option>` + arr.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-      if (arr.includes(cur)) sel.value = cur;
+      sel.innerHTML = `<option value="">All</option>` + values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
+      if (values.includes(cur)) sel.value = cur;
     };
-
     fill($("ticker"), tick);
     fill($("spread"), spr);
     fill($("setupType"), stp);
     fill($("status"), stat);
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
   function getFilters(){
@@ -474,142 +599,72 @@
       setupType: $("setupType").value.trim(),
       status: $("status").value.trim(),
       setupOnly: $("setupOnly").value === "yes",
-      minEdge: Number($("minEdge").value || 0),
-      minPop: Number($("minPop").value || 0),
-      topN: Number($("topN").value),
+      minEdge: Number($("minEdge").value || -1e9),
+      minPop: Number($("minPop").value || -1e9),
+      maxDte: Number($("maxDte").value || 999999),
       rankBy: $("rankBy").value,
+      pageSize: Number($("pageSize").value || 25),
+      density: $("density").value
     };
+  }
+
+  function tabColumns(){
+    // “Barchart-like”: show a concise, leaderboard-focused set per tab
+    const base = ["ticker","spread","setup_type","Setup","status","signal"];
+    if (state.activeTab === "leaders"){
+      return base.concat(["edge","pop","spread_mid","dte","exp_date","long_strike","short_strike"]);
+    }
+    if (state.activeTab === "setups"){
+      return base.concat(["Reason","entry_rule","exit_rule","setup_ok","ema21_invalidation"]);
+    }
+    if (state.activeTab === "risk"){
+      return base.concat(["breakeven","max_profit","max_loss","spread_delta","spread_theta","spread_vega"]);
+    }
+    // rules
+    return base.concat(["entry_rule","exit_rule","tp_spread_px","sl_spread_px","time_stop_days","take_profit_frac"]);
   }
 
   function applyFilters(){
     const f = getFilters();
+    state.pageSize = f.pageSize;
+
+    document.body.classList.toggle("compact", f.density === "compact");
+
     let out = state.rows;
 
-    if (f.setupOnly) out = out.filter(r => (r.Setup || "").toUpperCase() === "YES");
+    if (f.setupOnly) out = out.filter(r => String(r.Setup||"").toUpperCase() === "YES");
     if (f.ticker) out = out.filter(r => r.ticker === f.ticker);
     if (f.spread) out = out.filter(r => r.spread === f.spread);
     if (f.setupType) out = out.filter(r => r.setup_type === f.setupType);
     if (f.status) out = out.filter(r => (r.status || "") === f.status);
 
     out = out.filter(r => (toNum(r.edge) ?? -1e9) >= f.minEdge);
-    out = out.filter(r => (toNum(r.pop) ?? -1e9) >= f.minPop);
+    out = out.filter(r => (toNum(r.pop)  ?? -1e9) >= f.minPop);
+    out = out.filter(r => (toNum(r.dte)  ?? 0) <= f.maxDte);
 
     if (f.q){
-      out = out.filter(r => {
-        // search key fields first
-        const keys = ["ticker","spread","setup_type","Reason","entry_rule","exit_rule","long_symbol","short_symbol","status"];
-        for (const k of keys){
-          if (String(r[k] ?? "").toLowerCase().includes(f.q)) return true;
-        }
-        return false;
-      });
+      const keys = ["ticker","spread","setup_type","Reason","entry_rule","exit_rule","long_symbol","short_symbol","status"];
+      out = out.filter(r => keys.some(k => String(r[k] ?? "").toLowerCase().includes(f.q)));
     }
 
-    // sorting
-    const col = f.rankBy;
-    const dir = state.sort.col === col ? state.sort.dir : "desc";
+    // sort
+    const key = f.rankBy;
+    const dir = state.sort.key === key ? state.sort.dir : "desc";
     out = [...out].sort((a,b) => {
-      let av, bv;
-
-      if (col === "signal"){ av = a.signal; bv = b.signal; }
-      else av = toNum(a[col]);
-      if (col !== "signal") bv = toNum(b[col]);
-
-      if (av != null && bv != null) return dir === "asc" ? av - bv : bv - av;
-      const as = String(a[col] ?? "");
-      const bs = String(b[col] ?? "");
+      let av = (key === "signal") ? a.signal : toNum(a[key]);
+      let bv = (key === "signal") ? b.signal : toNum(b[key]);
+      if (av != null && bv != null) return dir === "asc" ? av-bv : bv-av;
+      const as = String(a[key] ?? "");
+      const bs = String(b[key] ?? "");
       return dir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
     });
 
-    // topN
-    if (Number.isFinite(f.topN) && f.topN < out.length) out = out.slice(0, f.topN);
+    // pagination clamp
+    const totalPages = Math.max(1, Math.ceil(out.length / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    if (state.page < 1) state.page = 1;
 
-    return out;
-  }
-
-  function buildTable(view){
-    const head = $("thead");
-    const body = $("tbody");
-    head.innerHTML = "";
-    body.innerHTML = "";
-
-    // curated display columns (modern, high-signal)
-    const cols = [
-      "__rank",
-      "ticker",
-      "spread",
-      "setup_type",
-      "Setup",
-      "status",
-      "signal",
-      "edge",
-      "pop",
-      "spread_mid",
-      "dte",
-      "exp_date",
-      "long_strike",
-      "short_strike",
-      "tp_spread_px",
-      "sl_spread_px",
-      "entry_rule",
-      "exit_rule"
-    ];
-
-    // header with sorting
-    cols.forEach(c => {
-      const th = document.createElement("th");
-      th.textContent = (c === "__rank") ? "#" : c;
-      th.onclick = () => {
-        const sortKey = c === "__rank" ? "signal" : c;
-        if (state.sort.col === sortKey) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
-        else { state.sort.col = sortKey; state.sort.dir = "desc"; }
-        // keep selector aligned if user clicks header
-        if (sortKey === "signal") $("rankBy").value = "signal";
-        else if (["edge","pop","bs_spread","spread_mid","dte"].includes(sortKey)) $("rankBy").value = sortKey;
-        render();
-      };
-      head.appendChild(th);
-    });
-
-    // body
-    view.forEach((r, idx) => {
-      const tr = document.createElement("tr");
-
-      cols.forEach(c => {
-        const td = document.createElement("td");
-
-        if (c === "__rank"){
-          td.textContent = String(idx+1);
-          td.className = "rank";
-        } else if (c === "signal"){
-          const sig = r.signal ?? 0;
-          td.textContent = String(sig);
-          td.className = `sig ${classify(sig)} right`;
-        } else if (c === "Setup"){
-          const v = (r.Setup || "").toUpperCase();
-          td.innerHTML = v === "YES" ? `<span class="pillSm">YES</span>` : `<span class="pillSm">NO</span>`;
-        } else if (c === "status"){
-          const v = (r.status || "").toLowerCase();
-          const cls = v === "ok" ? "good" : (v ? "warn" : "bad");
-          td.innerHTML = `<span class="sig ${cls}">${escapeHtml(r.status || "")}</span>`;
-        } else if (c === "edge" || c === "pop" || c === "spread_mid" || c === "dte" ||
-                   c === "tp_spread_px" || c === "sl_spread_px" || c === "long_strike" || c === "short_strike"){
-          const n = toNum(r[c]);
-          td.textContent = (n == null) ? "" : (c === "dte" ? String(Math.round(n)) : n.toFixed(3).replace(/\.?0+$/,""));
-          td.className = "right mono";
-        } else if (c === "entry_rule" || c === "exit_rule"){
-          td.innerHTML = `<span class="tiny">${escapeHtml(r[c] || "")}</span>`;
-        } else {
-          td.textContent = r[c] ?? "";
-          if (c === "exp_date") td.classList.add("mono");
-          if (c === "ticker" || c === "spread" || c === "setup_type") td.classList.add("mono");
-        }
-
-        tr.appendChild(td);
-      });
-
-      body.appendChild(tr);
-    });
+    return { out, totalPages };
   }
 
   function renderKPIs(view){
@@ -617,115 +672,101 @@
     const strong = sigs.filter(s => s >= 80).length;
     const watch  = sigs.filter(s => s >= 60 && s < 80).length;
     const avoid  = sigs.filter(s => s < 60).length;
-    const avg = sigs.length ? sigs.reduce((a,b)=>a+b,0)/sigs.length : 0;
+
+    const edges = view.map(r => toNum(r.edge)).filter(v => v != null);
+    const pops  = view.map(r => toNum(r.pop)).filter(v => v != null);
+
+    const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
 
     $("kStrong").textContent = String(strong);
     $("kWatch").textContent  = String(watch);
     $("kAvoid").textContent  = String(avoid);
-    $("kAvg").textContent    = avg.toFixed(1);
-
-    // top10 list
-    const top = [...view].sort((a,b) => (b.signal??0) - (a.signal??0)).slice(0,10);
-    const tb = $("top10");
-    tb.innerHTML = "";
-    top.forEach((r,i) => {
-      const sig = r.signal ?? 0;
-      const cls = classify(sig);
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="mono">${i+1}</td>
-        <td class="mono">${escapeHtml(r.ticker||"")}</td>
-        <td class="mono">${escapeHtml(r.spread||"")}</td>
-        <td class="right sig ${cls}">${sig}</td>
-        <td class="right mono">${(toNum(r.edge)==null?"":toNum(r.edge).toFixed(3).replace(/\.?0+$/,""))}</td>
-        <td class="right mono">${(toNum(r.pop)==null?"":toNum(r.pop).toFixed(3).replace(/\.?0+$/,""))}</td>
-      `;
-      tb.appendChild(tr);
-    });
+    $("kEdge").textContent   = avg(edges).toFixed(3);
+    $("kPop").textContent    = avg(pops).toFixed(3);
   }
 
-  // Simple canvas scatter: x=POP, y=EDGE, bubble=|edge|
-  function renderScatter(view){
-    const canvas = $("scatter");
-    const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.floor(rect.width * dpr);
-    canvas.height = Math.floor(rect.height * dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  function renderTable(view, totalPages){
+    const cols = tabColumns();
+    const head = $("thead");
+    const body = $("tbody");
+    head.innerHTML = "";
+    body.innerHTML = "";
 
-    ctx.clearRect(0,0,rect.width,rect.height);
-
-    const pts = view
-      .map(r => ({ pop: toNum(r.pop), edge: toNum(r.edge), sig: r.signal ?? 0, t: r.ticker || "" }))
-      .filter(p => p.pop != null && p.edge != null);
-
-    if (!pts.length){
-      $("scatterNote").textContent = "No points (need numeric edge and pop).";
-      return;
-    }
-
-    // bounds
-    const xMin = 0, xMax = 1; // pop in [0,1] typically
-    let yMin = Math.min(...pts.map(p=>p.edge));
-    let yMax = Math.max(...pts.map(p=>p.edge));
-    if (yMin === yMax){ yMin -= 0.1; yMax += 0.1; }
-    const pad = 34;
-    const w = rect.width - pad*2;
-    const h = rect.height - pad*2;
-
-    function xScale(x){ return pad + w * ((x - xMin) / (xMax - xMin)); }
-    function yScale(y){ return pad + h * (1 - (y - yMin) / (yMax - yMin)); }
-
-    // axes/grid
-    ctx.strokeStyle = "rgba(29,42,68,.8)";
-    ctx.lineWidth = 1;
-    for (let i=0;i<=4;i++){
-      const y = pad + h*(i/4);
-      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(pad+w, y); ctx.stroke();
-    }
-    for (let i=0;i<=4;i++){
-      const x = pad + w*(i/4);
-      ctx.beginPath(); ctx.moveTo(x, pad); ctx.lineTo(x, pad+h); ctx.stroke();
-    }
-
-    // zero-line for edge
-    if (yMin < 0 && yMax > 0){
-      const y0 = yScale(0);
-      ctx.strokeStyle = "rgba(122,162,255,.55)";
-      ctx.beginPath(); ctx.moveTo(pad, y0); ctx.lineTo(pad+w, y0); ctx.stroke();
-    }
-
-    // points
-    pts.forEach(p => {
-      const x = xScale(Math.max(xMin, Math.min(xMax, p.pop)));
-      const y = yScale(p.edge);
-
-      // bubble radius based on |edge|
-      const r = 3 + 10 * Math.min(1, Math.abs(p.edge) / 0.25);
-
-      // color by signal
-      const cls = classify(p.sig);
-      let fill = "rgba(138,160,198,.55)";
-      if (cls === "good") fill = "rgba(46,229,157,.70)";
-      else if (cls === "warn") fill = "rgba(255,209,102,.70)";
-      else fill = "rgba(255,92,124,.65)";
-
-      ctx.fillStyle = fill;
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    cols.forEach(c => {
+      const th = document.createElement("th");
+      th.textContent = c;
+      th.onclick = () => {
+        const sortKey = (c === "signal") ? "signal" : c;
+        if (state.sort.key === sortKey) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
+        else { state.sort.key = sortKey; state.sort.dir = "desc"; }
+        $("rankBy").value = (["signal","edge","pop","spread_mid","dte"].includes(sortKey)) ? sortKey : "signal";
+        render();
+      };
+      head.appendChild(th);
     });
 
-    // labels
-    ctx.fillStyle = "rgba(232,238,252,.85)";
-    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
-    ctx.fillText("POP →", pad + w - 46, rect.height - 12);
-    ctx.save();
-    ctx.translate(12, pad + 18);
-    ctx.rotate(-Math.PI/2);
-    ctx.fillText("EDGE →", 0, 0);
-    ctx.restore();
+    const start = (state.page - 1) * state.pageSize;
+    const pageRows = view.slice(start, start + state.pageSize);
 
-    $("scatterNote").textContent = `Y-range edge: [${yMin.toFixed(3)}, ${yMax.toFixed(3)}] • N=${pts.length}`;
+    pageRows.forEach(r => {
+      const tr = document.createElement("tr");
+      cols.forEach(c => {
+        const td = document.createElement("td");
+
+        if (c === "signal"){
+          const sig = r.signal ?? 0;
+          const b = bucket(sig);
+          td.innerHTML = `<span class="sig ${b}">${sig}</span>`;
+          td.className = "right";
+        } else if (c === "Setup"){
+          const v = String(r.Setup || "").toUpperCase();
+          td.innerHTML = v === "YES"
+            ? `<span class="badge"><span class="dot g"></span>YES</span>`
+            : `<span class="badge"><span class="dot r"></span>NO</span>`;
+        } else if (c === "status"){
+          const v = String(r.status || "").toLowerCase();
+          const b = (v === "ok") ? "g" : (v ? "a" : "r");
+          td.innerHTML = `<span class="badge"><span class="dot ${b}"></span>${esc(r.status || "")}</span>`;
+        } else {
+          const n = toNum(r[c]);
+          if (n != null && ["edge","pop","spread_mid","dte","breakeven","max_profit","max_loss","spread_delta","spread_theta","spread_vega","tp_spread_px","sl_spread_px","take_profit_frac"].includes(c)){
+            td.textContent = (c === "dte" || c === "time_stop_days") ? String(Math.round(n)) : n.toFixed(3).replace(/\.?0+$/,"");
+            td.className = "right mono";
+          } else {
+            // long text fields: keep readable but compact
+            if (["entry_rule","exit_rule","Reason"].includes(c)){
+              td.innerHTML = `<span class="muted">${esc(r[c] || "")}</span>`;
+            } else {
+              td.textContent = r[c] ?? "";
+            }
+            if (["ticker","spread","setup_type","exp_date","long_symbol","short_symbol"].includes(c)) td.classList.add("mono");
+          }
+        }
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+
+    $("pageNote").textContent = `Page ${state.page} / ${totalPages}`;
+  }
+
+  function updateMeta(totalRows, shownRows){
+    $("rowsAll").textContent = String(totalRows);
+    $("rowsShown").textContent = String(shownRows);
+    $("loadedAt").textContent = new Date().toLocaleString();
+    $("sortNote").textContent = `Sorted by ${state.sort.key} (${state.sort.dir})`;
+    $("hintPill").textContent = `Ranked by ${$("rankBy").value.toUpperCase()}`;
+  }
+
+  function showErr(msg){
+    const box = $("err");
+    box.style.display = "block";
+    box.textContent = msg;
+  }
+  function clearErr(){
+    const box = $("err");
+    box.style.display = "none";
+    box.textContent = "";
   }
 
   function makeShareLink(){
@@ -739,8 +780,11 @@
     p.set("so", f.setupOnly ? "1" : "0");
     p.set("me", String(f.minEdge));
     p.set("mp", String(f.minPop));
-    p.set("n", String(f.topN));
-    p.set("r", f.rankBy);
+    p.set("md", String(f.maxDte));
+    p.set("rb", f.rankBy);
+    p.set("ps", String(f.pageSize));
+    p.set("dn", f.density);
+    p.set("tab", state.activeTab);
     const u = new URL(window.location.href);
     u.search = p.toString();
     return u.toString();
@@ -754,29 +798,27 @@
     if (p.has("u")) $("setupType").value = p.get("u") || "";
     if (p.has("st")) $("status").value = p.get("st") || "";
     if (p.has("so")) $("setupOnly").value = (p.get("so")==="1") ? "yes" : "no";
-    if (p.has("me")) $("minEdge").value = p.get("me") || "0";
+    if (p.has("me")) $("minEdge").value = p.get("me") || "-1";
     if (p.has("mp")) $("minPop").value = p.get("mp") || "0";
-    if (p.has("n")) $("topN").value = p.get("n") || "50";
-    if (p.has("r")) $("rankBy").value = p.get("r") || "signal";
+    if (p.has("md")) $("maxDte").value = p.get("md") || "9999";
+    if (p.has("rb")) $("rankBy").value = p.get("rb") || "signal";
+    if (p.has("ps")) $("pageSize").value = p.get("ps") || "25";
+    if (p.has("dn")) $("density").value = p.get("dn") || "comfortable";
+    if (p.has("tab")) setTab(p.get("tab") || "leaders", true);
   }
 
-  function downloadFiltered(view){
-    const cols = Object.keys(state.rows[0] || {});
-    const want = ["ticker","spread","setup_type","Setup","status","edge","pop","spread_mid","dte","exp_date","long_strike","short_strike","tp_spread_px","sl_spread_px","entry_rule","exit_rule"];
-    const header = ["signal", ...want.filter(c => cols.includes(c))];
-
-    const lines = [header.join(",")];
-    view.forEach(r => {
-      const row = header.map(c => {
-        let v = "";
-        if (c === "signal") v = String(r.signal ?? "");
-        else v = String(r[c] ?? "");
+  function downloadFiltered(rows){
+    const cols = tabColumns(); // download current view columns (tab-based)
+    const header = cols.join(",");
+    const lines = [header];
+    rows.forEach(r => {
+      const row = cols.map(c => {
+        let v = (c === "signal") ? String(r.signal ?? "") : String(r[c] ?? "");
         if (v.includes('"') || v.includes(",") || v.includes("\n")) v = `"${v.replace(/"/g,'""')}"`;
         return v;
       });
       lines.push(row.join(","));
     });
-
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -786,82 +828,105 @@
     a.remove();
   }
 
+  function setTab(tab, skipRender){
+    state.activeTab = tab;
+
+    const map = {
+      "leaders": $("tab-leaders"),
+      "setups": $("tab-setups"),
+      "risk": $("tab-risk"),
+      "rules": $("tab-rules")
+    };
+    Object.entries(map).forEach(([k, el]) => el.classList.toggle("active", k === tab));
+
+    if (!skipRender) render();
+  }
+
   async function load(){
-    $("err").textContent = "";
-    $("src").innerHTML = `<a href="${state.url}" target="_blank" rel="noreferrer">${state.url}</a>`;
+    clearErr();
+    $("srcLink").href = state.url;
+    $("srcLink").textContent = state.url;
 
     const r = await fetch(state.url, { cache: "no-store" });
     if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
     const text = await r.text();
+    const { data } = parseCSV(text);
+    if (!data.length) throw new Error("CSV appears empty or could not be parsed.");
 
-    const { headers, data } = parseCSV(text);
-    if (!headers.length || !data.length) throw new Error("CSV appears empty or could not be parsed.");
-
-    // Normalize expected columns exist; keep as-is otherwise
-    state.cols = headers;
-    state.rows = data.map(o => {
-      const r = { ...o };
-      r.signal = computeSignal(r);
-      return r;
-    });
-
-    $("rowsP").textContent = String(state.rows.length);
-    setOptions();
+    state.rows = data.map(o => ({ ...o, signal: computeSignal(o) }));
+    setSelectOptions();
+    $("rowsAll").textContent = String(state.rows.length);
   }
 
   function render(){
-    const view = applyFilters();
-    $("rowsF").textContent = String(view.length);
+    clearErr();
+    const { out, totalPages } = applyFilters();
+    const view = out; // filtered+sorted full set; table paginates inside renderTable
 
-    buildTable(view);
     renderKPIs(view);
-    renderScatter(view);
-
-    $("loadedAt").textContent = new Date().toLocaleString();
-    $("insightLabel").textContent = "Live";
+    renderTable(view, totalPages);
+    updateMeta(state.rows.length, view.length);
   }
 
-  // wiring
-  const inputs = ["q","ticker","spread","setupType","setupOnly","status","minEdge","minPop","topN","rankBy"];
+  // Wiring
+  const inputs = ["q","ticker","spread","setupType","setupOnly","status","minEdge","minPop","maxDte","rankBy","pageSize","density"];
   inputs.forEach(id => {
-    $(id).addEventListener("input", render);
-    $(id).addEventListener("change", render);
+    $(id).addEventListener("input", () => { state.page = 1; render(); });
+    $(id).addEventListener("change", () => { state.page = 1; render(); });
   });
 
+  $("prev").onclick = () => { state.page = Math.max(1, state.page - 1); render(); };
+  $("next").onclick = () => { state.page = state.page + 1; render(); };
+
   $("reload").onclick = async () => {
-    $("insightLabel").textContent = "Loading…";
     try { await load(); applyFromQueryString(); render(); }
-    catch(e){ $("err").textContent = String(e && e.stack ? e.stack : e); $("insightLabel").textContent = "Error"; }
+    catch(e){ showErr(String(e && e.stack ? e.stack : e)); }
+  };
+
+  $("download").onclick = () => {
+    const { out } = applyFilters();
+    downloadFiltered(out);
   };
 
   $("copyLink").onclick = async () => {
     const link = makeShareLink();
-    try{
-      await navigator.clipboard.writeText(link);
-      $("insightLabel").textContent = "Link copied";
-      setTimeout(()=> $("insightLabel").textContent = "Live", 1200);
-    } catch {
-      prompt("Copy link:", link);
-    }
+    try { await navigator.clipboard.writeText(link); }
+    catch { prompt("Copy link:", link); }
   };
 
-  $("download").onclick = () => downloadFiltered(applyFilters());
+  $("reset").onclick = () => {
+    $("q").value = "";
+    $("ticker").value = "";
+    $("spread").value = "";
+    $("setupType").value = "";
+    $("status").value = "";
+    $("setupOnly").value = "yes";
+    $("minEdge").value = "-1.00";
+    $("minPop").value = "0.00";
+    $("maxDte").value = "9999";
+    $("rankBy").value = "signal";
+    $("pageSize").value = "25";
+    $("density").value = "comfortable";
+    state.page = 1;
+    setTab("leaders", true);
+    render();
+  };
 
-  // init
+  $("tab-leaders").onclick = () => setTab("leaders");
+  $("tab-setups").onclick  = () => setTab("setups");
+  $("tab-risk").onclick    = () => setTab("risk");
+  $("tab-rules").onclick   = () => setTab("rules");
+
+  // Init
   (async () => {
     try{
       await load();
       applyFromQueryString();
       render();
     } catch(e){
-      $("err").textContent = String(e && e.stack ? e.stack : e);
-      $("insightLabel").textContent = "Error";
+      showErr(String(e && e.stack ? e.stack : e));
     }
   })();
-
-  // redraw scatter on resize
-  let t=null;
-  window.addEventListener("resize", () => { clearTimeout(t); t=setTimeout(render, 120); });
 
 })();
 </script>
