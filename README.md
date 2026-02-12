@@ -2,6 +2,8 @@
 
 This repository hosts the **public-facing output** of the Options workflow.
 
+------------------------------------------------------------------------
+
 ## Overview
 
 The purpose of this repository is to provide:
@@ -11,7 +13,7 @@ The purpose of this repository is to provide:
 -   Daily high-signal option spread ideas
 -   A stable URL for external dashboards and tools
 
-
+https://aglucaci.github.io/options/
 
 ------------------------------------------------------------------------
 
@@ -44,19 +46,6 @@ Typical fields may include:
 
 Column names may evolve as the research workflow improves.
 
-------------------------------------------------------------------------
-
-## GitHub Pages
-
-If enabled, this repository can serve a live dashboard.
-
-To enable:
-
-    Settings → Pages → Deploy from branch → main / root
-
-Your dashboard will then be available at:
-
-    https://aglucaci.github.io/options/
 
 ------------------------------------------------------------------------
 
