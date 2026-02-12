@@ -3,31 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options TODAY Dashboard</title>
+  <title>Options TODAY — Signal Dashboard</title>
   <style>
     :root{
       --bg:#0b0f17; --panel:#0f1626; --panel2:#101a2e; --muted:#8aa0c6; --text:#e8eefc;
       --line:#1d2a44; --accent:#7aa2ff; --good:#2ee59d; --warn:#ffd166; --bad:#ff5c7c;
-      --shadow: 0 10px 35px rgba(0,0,0,.35);
-      --radius: 16px;
+      --shadow: 0 10px 35px rgba(0,0,0,.35); --radius: 16px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
     body{
-      margin:0; background:radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.20), transparent 60%),
-                 radial-gradient(900px 600px at 110% 10%, rgba(46,229,157,.12), transparent 50%),
-                 var(--bg);
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.20), transparent 60%),
+        radial-gradient(900px 600px at 110% 10%, rgba(46,229,157,.12), transparent 50%),
+        var(--bg);
       color:var(--text); font-family:var(--sans);
     }
     header{
-      padding:22px 18px 10px;
-      position:sticky; top:0; z-index:10;
+      padding:20px 18px 10px; position:sticky; top:0; z-index:10;
       backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(11,15,23,.92), rgba(11,15,23,.75));
-      border-bottom:1px solid rgba(29,42,68,.8);
+      background: linear-gradient(to bottom, rgba(11,15,23,.92), rgba(11,15,23,.74));
+      border-bottom:1px solid rgba(29,42,68,.85);
     }
-    .wrap{max-width:1200px; margin:0 auto}
+    .wrap{max-width:1280px; margin:0 auto}
     .titlebar{display:flex; gap:14px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap}
     h1{margin:0; font-size:18px; letter-spacing:.2px}
     .sub{margin:6px 0 0; color:var(--muted); font-size:12px}
@@ -38,11 +38,11 @@
       background:rgba(15,22,38,.55);
       border-radius:999px;
     }
-    .pill strong{color:var(--text); font-weight:600}
+    .pill strong{color:var(--text); font-weight:650}
     main{padding:14px 18px 34px}
     .grid{display:grid; gap:12px}
-    @media (min-width: 980px){
-      .grid{grid-template-columns: 1.15fr .85fr}
+    @media (min-width: 1050px){
+      .grid{grid-template-columns: 1.1fr .9fr}
     }
     .card{
       background: linear-gradient(180deg, rgba(15,22,38,.86), rgba(15,22,38,.66));
@@ -60,7 +60,7 @@
     .card .hd h2{margin:0; font-size:13px; color:#dbe7ff; letter-spacing:.2px}
     .card .bd{padding:12px}
     .controls{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    @media (max-width: 720px){ .controls{grid-template-columns:1fr} }
+    @media (max-width: 860px){ .controls{grid-template-columns:1fr} }
     label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
     input, select, button{
       width:100%;
@@ -72,16 +72,13 @@
       outline:none;
     }
     input::placeholder{color:rgba(138,160,198,.75)}
-    button{
-      cursor:pointer;
-      transition: transform .05s ease, border-color .15s ease;
-    }
+    button{cursor:pointer; transition: transform .05s ease, border-color .15s ease}
     button:hover{border-color: rgba(122,162,255,.65)}
     button:active{transform: translateY(1px)}
     .btnrow{display:flex; gap:10px; flex-wrap:wrap}
     .btnrow button{width:auto; padding:10px 12px; font-size:12px}
     .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
-    @media (max-width: 980px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width: 1050px){ .kpis{grid-template-columns:repeat(2,1fr)} }
     .kpi{
       padding:12px;
       border-radius: 14px;
@@ -89,7 +86,7 @@
       border:1px solid rgba(29,42,68,.8);
     }
     .kpi .k{color:var(--muted); font-size:12px}
-    .kpi .v{margin-top:6px; font-size:18px; font-weight:650; letter-spacing:.2px}
+    .kpi .v{margin-top:6px; font-size:18px; font-weight:700; letter-spacing:.2px; font-family: var(--mono)}
     .kpi .s{margin-top:6px; font-size:11px; color:var(--muted)}
     .badge{
       display:inline-flex; align-items:center; gap:6px;
@@ -107,12 +104,13 @@
       border:1px solid rgba(29,42,68,.8);
       background:rgba(11,15,23,.35);
     }
-    table{width:100%; border-collapse:collapse; min-width: 880px}
+    table{width:100%; border-collapse:collapse; min-width: 980px}
     th, td{
       padding:10px 10px;
       border-bottom:1px solid rgba(29,42,68,.65);
       font-size:12px;
       white-space:nowrap;
+      vertical-align:top;
     }
     th{
       position:sticky; top:0;
@@ -126,44 +124,47 @@
     .mono{font-family: var(--mono)}
     .muted{color:var(--muted)}
     .right{text-align:right}
-    .rank{
-      font-variant-numeric: tabular-nums;
-      font-family: var(--mono);
-      font-weight:700;
-      color:#dbe7ff;
-    }
+    .rank{font-family: var(--mono); font-weight:800; color:#dbe7ff}
     .sig{font-family: var(--mono); font-variant-numeric: tabular-nums}
     .sig.good{color:var(--good)}
     .sig.warn{color:var(--warn)}
     .sig.bad{color:var(--bad)}
-    .footer{margin-top:12px; color:var(--muted); font-size:12px}
-    .mini{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between
+    .pillSm{
+      display:inline-block; padding:2px 8px; border-radius:999px;
+      border:1px solid rgba(29,42,68,.8); background:rgba(16,26,46,.35);
+      color:var(--muted); font-size:11px;
     }
+    .footer{margin-top:12px; color:var(--muted); font-size:12px}
     .spark{
-      width:100%; height:80px;
+      width:100%; height:220px;
       border-radius: 12px;
       border:1px solid rgba(29,42,68,.8);
       background: rgba(16,26,46,.35);
       padding:8px;
     }
     .err{color: var(--bad); font-family: var(--mono); font-size:12px; white-space:pre-wrap}
+    .tiny{font-size:11px}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 900px){ .grid2{grid-template-columns:1fr} }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
   </style>
 </head>
+
 <body>
 <header>
   <div class="wrap">
     <div class="titlebar">
       <div>
-        <h1>Options TODAY Dashboard</h1>
+        <h1>Options TODAY — Signal Dashboard</h1>
         <div class="sub">
-          Source: <span class="mono" id="src"></span>
+          CSV: <span class="mono" id="src"></span>
         </div>
       </div>
       <div class="pillrow">
         <span class="pill"><strong id="rowsP">0</strong> rows</span>
-        <span class="pill">Last loaded <strong id="loadedAt">—</strong></span>
-        <span class="pill">Top signals: <strong id="topMode">Smart Score</strong></span>
+        <span class="pill">Filtered <strong id="rowsF">0</strong></span>
+        <span class="pill">Loaded <strong id="loadedAt">—</strong></span>
       </div>
     </div>
   </div>
@@ -171,11 +172,11 @@
 
 <main>
   <div class="wrap grid">
-    <!-- LEFT: Table -->
+    <!-- LEFT: table -->
     <section class="card">
       <div class="hd">
         <h2>Signal Board</h2>
-        <div class="mini">
+        <div class="pillrow">
           <span class="badge"><span class="dot good"></span>Strong</span>
           <span class="badge"><span class="dot warn"></span>Watch</span>
           <span class="badge"><span class="dot bad"></span>Avoid</span>
@@ -184,20 +185,58 @@
       <div class="bd">
         <div class="controls">
           <div>
-            <label>Search (ticker / strategy / notes)</label>
-            <input id="q" placeholder="e.g., SPY, call, credit, 0.10 edge…" />
+            <label>Search (ticker / symbols / rules / reason)</label>
+            <input id="q" placeholder="e.g., SPY, pullback, EMA21, QQQ…" />
           </div>
+
           <div>
-            <label>Universe filter (column autodetect)</label>
-            <select id="tickerFilter">
-              <option value="">All tickers</option>
+            <label>Ticker</label>
+            <select id="ticker">
+              <option value="">All</option>
             </select>
           </div>
 
           <div>
-            <label>Rank by</label>
-            <select id="rankBy"></select>
+            <label>Spread</label>
+            <select id="spread">
+              <option value="">All</option>
+            </select>
           </div>
+
+          <div>
+            <label>Setup type</label>
+            <select id="setupType">
+              <option value="">All</option>
+            </select>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>Setup = YES (default)</label>
+              <select id="setupOnly">
+                <option value="yes" selected>YES only</option>
+                <option value="no">All rows</option>
+              </select>
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="status">
+                <option value="">All</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>Min Edge</label>
+              <input id="minEdge" type="number" step="0.01" value="0.00" />
+            </div>
+            <div>
+              <label>Min POP</label>
+              <input id="minPop" type="number" step="0.01" value="0.00" />
+            </div>
+          </div>
+
           <div>
             <label>Show</label>
             <select id="topN">
@@ -209,14 +248,14 @@
           </div>
 
           <div>
-            <label>Min “Signal” (0–100)</label>
-            <input id="minSignal" type="number" min="0" max="100" step="1" value="60" />
-          </div>
-          <div>
-            <label>Only “actionable” rows</label>
-            <select id="onlyActionable">
-              <option value="no">No</option>
-              <option value="yes" selected>Yes</option>
+            <label>Rank by</label>
+            <select id="rankBy">
+              <option value="signal" selected>Signal (composite)</option>
+              <option value="edge">Edge</option>
+              <option value="pop">POP</option>
+              <option value="bs_spread">BS Spread</option>
+              <option value="spread_mid">Spread Mid</option>
+              <option value="dte">DTE</option>
             </select>
           </div>
         </div>
@@ -228,21 +267,23 @@
         </div>
 
         <div style="margin-top:12px" class="tablewrap">
-          <table id="tbl">
+          <table>
             <thead><tr id="thead"></tr></thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
 
         <div class="footer">
-          Tip: Click any column header to sort. The dashboard will auto-detect numeric columns and build a
-          “Smart Score” if your CSV doesn’t already contain a score/edge column.
+          “Signal” is a modern composite optimized for fast scanning: it rewards higher <span class="mono">edge</span> and <span class="mono">pop</span>,
+          and lightly penalizes higher <span class="mono">spread_mid</span> and longer <span class="mono">dte</span>.
+          Tune filters above to match your execution constraints.
         </div>
+
         <div id="err" class="err"></div>
       </div>
     </section>
 
-    <!-- RIGHT: Insights -->
+    <!-- RIGHT: insights + plots -->
     <aside class="card">
       <div class="hd">
         <h2>High-Signal Insights</h2>
@@ -251,58 +292,58 @@
       <div class="bd">
         <div class="kpis">
           <div class="kpi">
-            <div class="k">Strong signals</div>
+            <div class="k">Strong</div>
             <div class="v" id="kStrong">0</div>
-            <div class="s" id="kStrongS">≥ 80 signal</div>
+            <div class="s">Signal ≥ 80</div>
           </div>
           <div class="kpi">
-            <div class="k">Watchlist</div>
+            <div class="k">Watch</div>
             <div class="v" id="kWatch">0</div>
-            <div class="s">60–79 signal</div>
+            <div class="s">60–79</div>
           </div>
           <div class="kpi">
             <div class="k">Avoid</div>
             <div class="v" id="kAvoid">0</div>
-            <div class="s">&lt; 60 signal</div>
+            <div class="s">&lt; 60</div>
           </div>
           <div class="kpi">
-            <div class="k">Unique tickers</div>
-            <div class="v" id="kTick">0</div>
+            <div class="k">Avg Signal</div>
+            <div class="v" id="kAvg">0.0</div>
             <div class="s">in filtered view</div>
           </div>
         </div>
 
         <div style="margin-top:12px" class="card" style="box-shadow:none">
-          <div class="hd"><h2>Top 10 tickers by average signal</h2></div>
+          <div class="hd"><h2>Edge vs POP (bubble = |edge|)</h2></div>
+          <div class="bd">
+            <canvas id="scatter" class="spark"></canvas>
+            <div class="footer tiny muted" id="scatterNote"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card" style="box-shadow:none">
+          <div class="hd"><h2>Top 10 by signal</h2></div>
           <div class="bd">
             <div class="tablewrap">
-              <table>
+              <table style="min-width: 0">
                 <thead>
                   <tr>
+                    <th>#</th>
                     <th>Ticker</th>
-                    <th class="right">Avg Signal</th>
-                    <th class="right">Count</th>
+                    <th>Spread</th>
+                    <th class="right">Signal</th>
+                    <th class="right">Edge</th>
+                    <th class="right">POP</th>
                   </tr>
                 </thead>
-                <tbody id="topTickers"></tbody>
+                <tbody id="top10"></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <div style="margin-top:12px" class="card" style="box-shadow:none">
-          <div class="hd"><h2>Signal distribution</h2></div>
-          <div class="bd">
-            <canvas id="spark" class="spark"></canvas>
-            <div class="footer muted" id="sparkNote"></div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px" class="card" style="box-shadow:none">
-          <div class="hd"><h2>Column intelligence</h2></div>
-          <div class="bd">
-            <div class="footer muted" id="colIntel"></div>
-          </div>
+        <div style="margin-top:12px" class="footer muted">
+          Raw CSV endpoint is ideal for embedding in other dashboards and automations.
         </div>
       </div>
     </aside>
@@ -311,562 +352,427 @@
 
 <script>
 (() => {
+  // Update this if your raw URL changes
   const DEFAULT_URL = "https://raw.githubusercontent.com/aglucaci/options/refs/heads/main/tables/TODAY.csv";
-  const el = (id) => document.getElementById(id);
+
+  const $ = (id) => document.getElementById(id);
 
   const state = {
     url: DEFAULT_URL,
-    raw: [],
+    rows: [],
     cols: [],
-    tickerCol: null,
-    numericCols: [],
-    rankCandidates: [],
-    sort: { col: null, dir: "desc" },
+    sort: { col: "signal", dir: "desc" },
   };
 
-  // -------- CSV parsing (robust, supports quoted commas) --------
-  function parseCSV(text) {
-    const rows = [];
-    let i=0, field="", row=[], inQuotes=false;
-    while (i < text.length) {
-      const c = text[i];
-      if (inQuotes) {
-        if (c === '"' && text[i+1] === '"') { field+='"'; i+=2; continue; }
-        if (c === '"') { inQuotes=false; i++; continue; }
-        field += c; i++; continue;
-      } else {
-        if (c === '"') { inQuotes=true; i++; continue; }
-        if (c === ',') { row.push(field); field=""; i++; continue; }
-        if (c === '\r') { i++; continue; }
-        if (c === '\n') { row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
-        field += c; i++; continue;
-      }
-    }
-    // last line
-    if (field.length || row.length) { row.push(field); rows.push(row); }
-    if (!rows.length) return { headers: [], data: [] };
-    const headers = rows[0].map(h => h.trim());
-    const data = rows.slice(1)
-      .filter(r => r.some(x => String(x||"").trim() !== ""))
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
-        return obj;
-      });
-    return { headers, data };
-  }
-
-  function toNum(v) {
+  function toNum(v){
     if (v == null) return null;
     const s = String(v).trim();
     if (!s) return null;
-    // strip % and commas and $ signs
-    const cleaned = s.replace(/[$,%]/g, "").replace(/,/g,"");
+    const cleaned = s.replace(/[$,%]/g,"").replace(/,/g,"");
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : null;
   }
 
-  function detectTickerCol(cols) {
-    const lower = cols.map(c => c.toLowerCase());
-    const candidates = ["ticker","symbol","underlying","asset"].map(x=>x.toLowerCase());
-    for (const cand of candidates) {
-      const idx = lower.indexOf(cand);
-      if (idx >= 0) return cols[idx];
-    }
-    // heuristic: first col with many short-uppercase tokens
-    let best = null, bestScore = -1;
-    for (const c of cols) {
-      const score = state.raw.slice(0,200).reduce((acc,r)=>{
-        const v = (r[c]||"").trim();
-        if (/^[A-Z]{1,6}$/.test(v)) acc++;
-        return acc;
-      },0);
-      if (score > bestScore) { bestScore = score; best = c; }
-    }
-    return bestScore >= 10 ? best : null;
-  }
-
-  function detectNumericCols(cols, rows) {
-    const nums = [];
-    for (const c of cols) {
-      let ok=0, total=0;
-      for (let i=0;i<Math.min(rows.length,300);i++) {
-        const n = toNum(rows[i][c]);
-        if (rows[i][c] !== "" && rows[i][c] != null) total++;
-        if (n != null) ok++;
-      }
-      // numeric if at least 60% of non-empty parse as number and there are enough samples
-      if (total >= 8 && ok/total >= 0.6) nums.push(c);
-    }
-    return nums;
-  }
-
-  // -------- Smart score construction --------
-  function pickRankCandidates(cols) {
-    const lc = cols.map(c=>c.toLowerCase());
-    const want = [
-      // highest-priority “signal-ish” names
-      ["signal","score","rank","edge","ev","expected_value","alpha"],
-      // common option spread terms that imply “better when higher”
-      ["prob","pop","pwin","win","return","roi","r","credit","premium","net_credit","theta"],
-      // “better when lower” (will be inverted)
-      ["risk","loss","drawdown","debit","cost","spread_cost","max_loss","vega","iv","implied_vol","delta"]
-    ];
-
-    const found = new Set();
-
-    // Exact/contains matches
-    for (const group of want) {
-      for (const key of group) {
-        for (let i=0;i<lc.length;i++) {
-          if (lc[i] === key || lc[i].includes(key)) found.add(cols[i]);
-        }
+  // Robust CSV parser (handles quotes)
+  function parseCSV(text){
+    const rows = [];
+    let i=0, field="", row=[], inQ=false;
+    while (i < text.length){
+      const c = text[i];
+      if (inQ){
+        if (c === '"' && text[i+1] === '"'){ field+='"'; i+=2; continue; }
+        if (c === '"'){ inQ=false; i++; continue; }
+        field += c; i++; continue;
+      } else {
+        if (c === '"'){ inQ=true; i++; continue; }
+        if (c === ','){ row.push(field); field=""; i++; continue; }
+        if (c === '\r'){ i++; continue; }
+        if (c === '\n'){ row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
+        field += c; i++; continue;
       }
     }
+    if (field.length || row.length){ row.push(field); rows.push(row); }
+    if (!rows.length) return { headers: [], data: [] };
 
-    // Keep only numeric
-    const out = [...found].filter(c => state.numericCols.includes(c));
-
-    // Guarantee at least something: use first few numeric cols
-    if (out.length < 2) {
-      for (const c of state.numericCols.slice(0,6)) if (!out.includes(c)) out.push(c);
-    }
-    return out.slice(0,10);
-  }
-
-  function zscore(values) {
-    const finite = values.filter(v => Number.isFinite(v));
-    const n = finite.length;
-    if (n < 5) return { mean: 0, sd: 1 };
-    const mean = finite.reduce((a,b)=>a+b,0)/n;
-    const varr = finite.reduce((a,b)=>a + (b-mean)*(b-mean),0)/Math.max(1,(n-1));
-    const sd = Math.sqrt(varr) || 1;
-    return { mean, sd };
-  }
-
-  function buildSmartSignal(rows) {
-    // If a “signal/score” column already exists, just map it to 0–100 if needed.
-    const lc = state.cols.map(c=>c.toLowerCase());
-    const directIdx = lc.findIndex(c => c === "signal" || c.includes("signal") || c === "score" || c.includes("score"));
-    let directCol = directIdx >= 0 ? state.cols[directIdx] : null;
-    if (directCol && state.numericCols.includes(directCol)) {
-      const vals = rows.map(r => toNum(r[directCol])).filter(v => v != null);
-      const min = Math.min(...vals), max = Math.max(...vals);
-      rows.forEach(r => {
-        const v = toNum(r[directCol]);
-        r.__signal = (v == null) ? 0 : (max > min ? Math.max(0, Math.min(100, 100*(v-min)/(max-min))) : 50);
+    const headers = rows[0].map(h => h.trim());
+    const data = rows.slice(1)
+      .filter(r => r.some(x => String(x||"").trim() !== ""))
+      .map(r => {
+        const o = {};
+        headers.forEach((h, idx) => o[h] = (r[idx] ?? "").trim());
+        return o;
       });
-      state.rankCandidates = ["__signal", directCol, ...state.rankCandidates.filter(x=>x!==directCol)];
-      el("topMode").textContent = directCol;
-      return;
-    }
-
-    // Otherwise compute from candidates using z-scores with inversion for “risk-like” columns.
-    const candidates = state.rankCandidates.length ? state.rankCandidates : pickRankCandidates(state.cols);
-    const invertKeys = ["risk","loss","drawdown","debit","cost","max_loss","iv","implied","delta","vega"];
-    const colStats = {};
-    candidates.forEach(c => {
-      const vals = rows.map(r => toNum(r[c])).map(v => v==null ? NaN : v);
-      colStats[c] = { ...zscore(vals), invert: invertKeys.some(k => c.toLowerCase().includes(k)) };
-    });
-
-    // weighted sum: equal weights for now, but “edge/ev/signal” gets a bit more
-    const w = {};
-    candidates.forEach(c => {
-      const name = c.toLowerCase();
-      let ww = 1.0;
-      if (name.includes("edge") || name.includes("ev") || name.includes("signal") || name.includes("score") || name.includes("alpha")) ww = 1.4;
-      if (name.includes("prob") || name.includes("pop") || name.includes("pwin") || name.includes("win")) ww = 1.2;
-      if (name.includes("risk") || name.includes("loss") || name.includes("debit") || name.includes("cost")) ww = 1.0; // (inverted later)
-      w[c] = ww;
-    });
-
-    // raw composite
-    const comp = rows.map(r => {
-      let num=0, den=0;
-      candidates.forEach(c => {
-        const v = toNum(r[c]);
-        if (v == null) return;
-        const st = colStats[c];
-        let z = (v - st.mean) / (st.sd || 1);
-        if (st.invert) z = -z;
-        num += w[c]*z;
-        den += w[c];
-      });
-      return den ? num/den : 0;
-    });
-
-    // map composite -> 0..100 with percentiles
-    const sorted = [...comp].sort((a,b)=>a-b);
-    const p = (x) => {
-      const idx = sorted.findIndex(v => v >= x);
-      return idx < 0 ? 1 : idx/(sorted.length-1 || 1);
-    };
-    rows.forEach((r, i) => r.__signal = Math.round(100 * p(comp[i])));
-
-    state.rankCandidates = ["__signal", ...candidates.filter(c=>c!=="__signal")];
-    el("topMode").textContent = "Smart Score";
+    return { headers, data };
   }
 
-  function buildActionableFlag(rows) {
-    // Heuristic: “actionable” if signal high AND (has volume/oi filters satisfied if present)
-    const volCol = state.cols.find(c => c.toLowerCase().includes("vol") && state.numericCols.includes(c));
-    const oiCol  = state.cols.find(c => c.toLowerCase().includes("oi")  && state.numericCols.includes(c));
-    rows.forEach(r => {
-      const sig = r.__signal ?? 0;
-      let ok = sig >= 60;
-      if (volCol) {
-        const v = toNum(r[volCol]);
-        if (v != null && v < 25) ok = false;
-      }
-      if (oiCol) {
-        const v = toNum(r[oiCol]);
-        if (v != null && v < 20) ok = false;
-      }
-      r.__actionable = ok ? "YES" : "NO";
-    });
+  // Composite signal tuned to your schema:
+  // + edge (higher better), + pop (higher better)
+  // - spread_mid (higher capital at risk / cost), - dte (longer tie-up)
+  // For credit spreads, negative spread_mid isn't expected here; still works.
+  function computeSignal(r){
+    const edge = toNum(r.edge) ?? 0;
+    const pop  = toNum(r.pop) ?? 0;
+    const mid  = toNum(r.spread_mid) ?? 0;
+    const dte  = toNum(r.dte) ?? 0;
+
+    // Map typical ranges to comparable scale:
+    // edge: assume roughly [-0.5..+0.5] in practice -> emphasize
+    const edgeScore = Math.max(-1, Math.min(1, edge / 0.25)); // +/-0.25 -> +/-1
+    // pop: roughly [0..1]
+    const popScore = Math.max(0, Math.min(1, pop)) * 2 - 1;   // 0..1 -> -1..+1
+    // mid: penalize large debit/credit magnitude; assume 0..5 typical
+    const midScore = -Math.max(0, Math.min(1, mid / 3.0));    // 0..3 -> 0..-1
+    // dte: penalize long tie-up; assume 0..120 typical
+    const dteScore = -Math.max(0, Math.min(1, dte / 90.0));   // 0..90 -> 0..-1
+
+    // weights: edge > pop > mid > dte
+    const raw = 0.48*edgeScore + 0.34*popScore + 0.12*midScore + 0.06*dteScore;
+
+    // Convert raw [-1..+1] approx -> [0..100]
+    const sig = Math.round(50 + 50 * Math.max(-1, Math.min(1, raw)));
+    return sig;
   }
 
-  // -------- Rendering --------
-  function populateTickerFilter(rows) {
-    const sel = el("tickerFilter");
-    sel.innerHTML = `<option value="">All tickers</option>`;
-    if (!state.tickerCol) return;
-    const set = new Set(rows.map(r => (r[state.tickerCol]||"").trim()).filter(Boolean));
-    [...set].sort().forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t; opt.textContent = t;
-      sel.appendChild(opt);
-    });
-  }
-
-  function fmt(v) {
-    if (v == null) return "";
-    const s = String(v);
-    // right align numeric-looking
-    return s;
-  }
-
-  function classifySignal(sig) {
+  function classify(sig){
     if (sig >= 80) return "good";
     if (sig >= 60) return "warn";
     return "bad";
   }
 
-  function getFilterState() {
+  function uniqueSorted(values){
+    return [...new Set(values.filter(v => v != null && String(v).trim() !== ""))].sort();
+  }
+
+  function setOptions(){
+    // ticker/spread/setupType/status
+    const tick = uniqueSorted(state.rows.map(r => r.ticker));
+    const spr  = uniqueSorted(state.rows.map(r => r.spread));
+    const stp  = uniqueSorted(state.rows.map(r => r.setup_type));
+    const stat = uniqueSorted(state.rows.map(r => r.status));
+
+    const fill = (sel, arr) => {
+      const cur = sel.value;
+      sel.innerHTML = `<option value="">All</option>` + arr.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+      if (arr.includes(cur)) sel.value = cur;
+    };
+
+    fill($("ticker"), tick);
+    fill($("spread"), spr);
+    fill($("setupType"), stp);
+    fill($("status"), stat);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function getFilters(){
     return {
-      q: el("q").value.trim().toLowerCase(),
-      ticker: el("tickerFilter").value.trim(),
-      topN: Number(el("topN").value),
-      minSignal: Math.max(0, Math.min(100, Number(el("minSignal").value || 0))),
-      onlyActionable: el("onlyActionable").value === "yes",
-      rankBy: el("rankBy").value
+      q: $("q").value.trim().toLowerCase(),
+      ticker: $("ticker").value.trim(),
+      spread: $("spread").value.trim(),
+      setupType: $("setupType").value.trim(),
+      status: $("status").value.trim(),
+      setupOnly: $("setupOnly").value === "yes",
+      minEdge: Number($("minEdge").value || 0),
+      minPop: Number($("minPop").value || 0),
+      topN: Number($("topN").value),
+      rankBy: $("rankBy").value,
     };
   }
 
-  function applyFilters(rows) {
-    const f = getFilterState();
-    let out = rows;
+  function applyFilters(){
+    const f = getFilters();
+    let out = state.rows;
 
-    if (f.q) {
+    if (f.setupOnly) out = out.filter(r => (r.Setup || "").toUpperCase() === "YES");
+    if (f.ticker) out = out.filter(r => r.ticker === f.ticker);
+    if (f.spread) out = out.filter(r => r.spread === f.spread);
+    if (f.setupType) out = out.filter(r => r.setup_type === f.setupType);
+    if (f.status) out = out.filter(r => (r.status || "") === f.status);
+
+    out = out.filter(r => (toNum(r.edge) ?? -1e9) >= f.minEdge);
+    out = out.filter(r => (toNum(r.pop) ?? -1e9) >= f.minPop);
+
+    if (f.q){
       out = out.filter(r => {
-        // search across all columns lightly
-        for (const c of state.cols) {
-          const v = (r[c] ?? "");
-          if (String(v).toLowerCase().includes(f.q)) return true;
+        // search key fields first
+        const keys = ["ticker","spread","setup_type","Reason","entry_rule","exit_rule","long_symbol","short_symbol","status"];
+        for (const k of keys){
+          if (String(r[k] ?? "").toLowerCase().includes(f.q)) return true;
         }
         return false;
       });
     }
-    if (f.ticker && state.tickerCol) {
-      out = out.filter(r => (r[state.tickerCol]||"").trim() === f.ticker);
-    }
-    out = out.filter(r => (r.__signal ?? 0) >= f.minSignal);
-    if (f.onlyActionable) out = out.filter(r => r.__actionable === "YES");
 
-    // sort
-    const col = f.rankBy || "__signal";
+    // sorting
+    const col = f.rankBy;
     const dir = state.sort.col === col ? state.sort.dir : "desc";
     out = [...out].sort((a,b) => {
-      const an = toNum(a[col]);
-      const bn = toNum(b[col]);
-      if (an != null && bn != null) return dir === "asc" ? an-bn : bn-an;
+      let av, bv;
+
+      if (col === "signal"){ av = a.signal; bv = b.signal; }
+      else av = toNum(a[col]);
+      if (col !== "signal") bv = toNum(b[col]);
+
+      if (av != null && bv != null) return dir === "asc" ? av - bv : bv - av;
       const as = String(a[col] ?? "");
       const bs = String(b[col] ?? "");
       return dir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
     });
 
-    // top N
+    // topN
     if (Number.isFinite(f.topN) && f.topN < out.length) out = out.slice(0, f.topN);
+
     return out;
   }
 
-  function renderTable(rows) {
-    const head = el("thead");
-    const body = el("tbody");
+  function buildTable(view){
+    const head = $("thead");
+    const body = $("tbody");
     head.innerHTML = "";
     body.innerHTML = "";
 
-    // Create display columns: rank + signal + actionable + ticker (if exists) + rest
-    const baseCols = [];
-    baseCols.push("__rank");
-    baseCols.push("__signal");
-    baseCols.push("__actionable");
-    if (state.tickerCol && !baseCols.includes(state.tickerCol)) baseCols.push(state.tickerCol);
+    // curated display columns (modern, high-signal)
+    const cols = [
+      "__rank",
+      "ticker",
+      "spread",
+      "setup_type",
+      "Setup",
+      "status",
+      "signal",
+      "edge",
+      "pop",
+      "spread_mid",
+      "dte",
+      "exp_date",
+      "long_strike",
+      "short_strike",
+      "tp_spread_px",
+      "sl_spread_px",
+      "entry_rule",
+      "exit_rule"
+    ];
 
-    const rest = state.cols.filter(c => !baseCols.includes(c));
-    const displayCols = [...baseCols, ...rest];
-
-    // header
-    displayCols.forEach(c => {
+    // header with sorting
+    cols.forEach(c => {
       const th = document.createElement("th");
-      th.textContent = c === "__rank" ? "#" :
-                       c === "__signal" ? "Signal" :
-                       c === "__actionable" ? "Actionable" : c;
-      th.dataset.col = c;
+      th.textContent = (c === "__rank") ? "#" : c;
       th.onclick = () => {
-        // toggle sort direction if same column, else default desc
-        if (state.sort.col === c) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
-        else { state.sort.col = c; state.sort.dir = "desc"; }
-        // re-render via refresh
-        refresh();
+        const sortKey = c === "__rank" ? "signal" : c;
+        if (state.sort.col === sortKey) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
+        else { state.sort.col = sortKey; state.sort.dir = "desc"; }
+        // keep selector aligned if user clicks header
+        if (sortKey === "signal") $("rankBy").value = "signal";
+        else if (["edge","pop","bs_spread","spread_mid","dte"].includes(sortKey)) $("rankBy").value = sortKey;
+        render();
       };
       head.appendChild(th);
     });
 
-    // rows
-    rows.forEach((r, idx) => {
+    // body
+    view.forEach((r, idx) => {
       const tr = document.createElement("tr");
-      displayCols.forEach(c => {
+
+      cols.forEach(c => {
         const td = document.createElement("td");
 
-        if (c === "__rank") {
+        if (c === "__rank"){
           td.textContent = String(idx+1);
           td.className = "rank";
-        } else if (c === "__signal") {
-          const sig = r.__signal ?? 0;
+        } else if (c === "signal"){
+          const sig = r.signal ?? 0;
           td.textContent = String(sig);
-          td.className = "sig " + classifySignal(sig) + " right";
-        } else if (c === "__actionable") {
-          td.textContent = r.__actionable || "NO";
-          td.className = "mono";
+          td.className = `sig ${classify(sig)} right`;
+        } else if (c === "Setup"){
+          const v = (r.Setup || "").toUpperCase();
+          td.innerHTML = v === "YES" ? `<span class="pillSm">YES</span>` : `<span class="pillSm">NO</span>`;
+        } else if (c === "status"){
+          const v = (r.status || "").toLowerCase();
+          const cls = v === "ok" ? "good" : (v ? "warn" : "bad");
+          td.innerHTML = `<span class="sig ${cls}">${escapeHtml(r.status || "")}</span>`;
+        } else if (c === "edge" || c === "pop" || c === "spread_mid" || c === "dte" ||
+                   c === "tp_spread_px" || c === "sl_spread_px" || c === "long_strike" || c === "short_strike"){
+          const n = toNum(r[c]);
+          td.textContent = (n == null) ? "" : (c === "dte" ? String(Math.round(n)) : n.toFixed(3).replace(/\.?0+$/,""));
+          td.className = "right mono";
+        } else if (c === "entry_rule" || c === "exit_rule"){
+          td.innerHTML = `<span class="tiny">${escapeHtml(r[c] || "")}</span>`;
         } else {
-          const v = r[c];
-          td.textContent = fmt(v);
-          if (state.numericCols.includes(c)) td.classList.add("right","mono");
+          td.textContent = r[c] ?? "";
+          if (c === "exp_date") td.classList.add("mono");
+          if (c === "ticker" || c === "spread" || c === "setup_type") td.classList.add("mono");
         }
+
         tr.appendChild(td);
       });
+
       body.appendChild(tr);
     });
-
-    el("rowsP").textContent = String(rows.length);
   }
 
-  function renderKPIs(rows) {
-    const strong = rows.filter(r => (r.__signal ?? 0) >= 80).length;
-    const watch  = rows.filter(r => (r.__signal ?? 0) >= 60 && (r.__signal ?? 0) < 80).length;
-    const avoid  = rows.filter(r => (r.__signal ?? 0) < 60).length;
+  function renderKPIs(view){
+    const sigs = view.map(r => r.signal ?? 0);
+    const strong = sigs.filter(s => s >= 80).length;
+    const watch  = sigs.filter(s => s >= 60 && s < 80).length;
+    const avoid  = sigs.filter(s => s < 60).length;
+    const avg = sigs.length ? sigs.reduce((a,b)=>a+b,0)/sigs.length : 0;
 
-    el("kStrong").textContent = String(strong);
-    el("kWatch").textContent  = String(watch);
-    el("kAvoid").textContent  = String(avoid);
+    $("kStrong").textContent = String(strong);
+    $("kWatch").textContent  = String(watch);
+    $("kAvoid").textContent  = String(avoid);
+    $("kAvg").textContent    = avg.toFixed(1);
 
-    const tset = new Set();
-    if (state.tickerCol) rows.forEach(r => tset.add((r[state.tickerCol]||"").trim()));
-    el("kTick").textContent = String([...tset].filter(Boolean).length);
-
-    // top tickers by avg signal
-    const map = new Map();
-    if (state.tickerCol) {
-      rows.forEach(r => {
-        const t = (r[state.tickerCol]||"").trim();
-        if (!t) return;
-        const cur = map.get(t) || { sum:0, n:0 };
-        cur.sum += (r.__signal ?? 0);
-        cur.n += 1;
-        map.set(t, cur);
-      });
-    }
-    const top = [...map.entries()]
-      .map(([t,o]) => ({ t, avg: o.sum/o.n, n:o.n }))
-      .sort((a,b)=>b.avg-a.avg)
-      .slice(0,10);
-
-    const tb = el("topTickers");
+    // top10 list
+    const top = [...view].sort((a,b) => (b.signal??0) - (a.signal??0)).slice(0,10);
+    const tb = $("top10");
     tb.innerHTML = "";
-    top.forEach(x => {
+    top.forEach((r,i) => {
+      const sig = r.signal ?? 0;
+      const cls = classify(sig);
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="mono">${x.t}</td><td class="right sig ${classifySignal(x.avg)}">${x.avg.toFixed(1)}</td><td class="right mono">${x.n}</td>`;
+      tr.innerHTML = `
+        <td class="mono">${i+1}</td>
+        <td class="mono">${escapeHtml(r.ticker||"")}</td>
+        <td class="mono">${escapeHtml(r.spread||"")}</td>
+        <td class="right sig ${cls}">${sig}</td>
+        <td class="right mono">${(toNum(r.edge)==null?"":toNum(r.edge).toFixed(3).replace(/\.?0+$/,""))}</td>
+        <td class="right mono">${(toNum(r.pop)==null?"":toNum(r.pop).toFixed(3).replace(/\.?0+$/,""))}</td>
+      `;
       tb.appendChild(tr);
     });
   }
 
-  function renderSpark(rows) {
-    const canvas = el("spark");
+  // Simple canvas scatter: x=POP, y=EDGE, bubble=|edge|
+  function renderScatter(view){
+    const canvas = $("scatter");
     const ctx = canvas.getContext("2d");
-    // size canvas to CSS box
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.floor(rect.width * dpr);
     canvas.height = Math.floor(rect.height * dpr);
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
 
     ctx.clearRect(0,0,rect.width,rect.height);
 
-    const vals = rows.map(r => r.__signal ?? 0);
-    if (!vals.length) {
-      el("sparkNote").textContent = "No rows in view.";
+    const pts = view
+      .map(r => ({ pop: toNum(r.pop), edge: toNum(r.edge), sig: r.signal ?? 0, t: r.ticker || "" }))
+      .filter(p => p.pop != null && p.edge != null);
+
+    if (!pts.length){
+      $("scatterNote").textContent = "No points (need numeric edge and pop).";
       return;
     }
 
-    // histogram bins 0..100
-    const bins = new Array(10).fill(0);
-    vals.forEach(v => {
-      const idx = Math.min(9, Math.max(0, Math.floor(v/10)));
-      bins[idx] += 1;
-    });
-    const max = Math.max(...bins) || 1;
+    // bounds
+    const xMin = 0, xMax = 1; // pop in [0,1] typically
+    let yMin = Math.min(...pts.map(p=>p.edge));
+    let yMax = Math.max(...pts.map(p=>p.edge));
+    if (yMin === yMax){ yMin -= 0.1; yMax += 0.1; }
+    const pad = 34;
+    const w = rect.width - pad*2;
+    const h = rect.height - pad*2;
 
-    // draw bars
-    const pad = 10, w = rect.width - pad*2, h = rect.height - pad*2;
-    const bw = w / bins.length;
+    function xScale(x){ return pad + w * ((x - xMin) / (xMax - xMin)); }
+    function yScale(y){ return pad + h * (1 - (y - yMin) / (yMax - yMin)); }
 
-    // grid
-    ctx.globalAlpha = 1;
+    // axes/grid
     ctx.strokeStyle = "rgba(29,42,68,.8)";
     ctx.lineWidth = 1;
     for (let i=0;i<=4;i++){
-      const y = pad + (h*(i/4));
+      const y = pad + h*(i/4);
       ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(pad+w, y); ctx.stroke();
     }
-
-    for (let i=0;i<bins.length;i++){
-      const x = pad + i*bw + 2;
-      const barh = h * (bins[i]/max);
-      const y = pad + (h - barh);
-
-      // bar color by bin zone
-      const mid = i*10 + 5;
-      let col = "rgba(138,160,198,.55)";
-      if (mid >= 80) col = "rgba(46,229,157,.75)";
-      else if (mid >= 60) col = "rgba(255,209,102,.75)";
-      else col = "rgba(255,92,124,.70)";
-
-      ctx.fillStyle = col;
-      ctx.fillRect(x, y, bw-4, barh);
+    for (let i=0;i<=4;i++){
+      const x = pad + w*(i/4);
+      ctx.beginPath(); ctx.moveTo(x, pad); ctx.lineTo(x, pad+h); ctx.stroke();
     }
 
-    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
-    el("sparkNote").textContent = `Avg signal in view: ${avg.toFixed(1)} • Rows: ${vals.length}`;
-  }
+    // zero-line for edge
+    if (yMin < 0 && yMax > 0){
+      const y0 = yScale(0);
+      ctx.strokeStyle = "rgba(122,162,255,.55)";
+      ctx.beginPath(); ctx.moveTo(pad, y0); ctx.lineTo(pad+w, y0); ctx.stroke();
+    }
 
-  function renderColumnIntel() {
-    const picks = state.rankCandidates.filter(c => c !== "__signal").slice(0,6);
-    const tcol = state.tickerCol ? `Ticker column: <span class="mono">${state.tickerCol}</span>` : `Ticker column: <span class="mono">not detected</span>`;
-    const ncols = state.numericCols.length ? `Numeric columns detected: <span class="mono">${state.numericCols.length}</span>` : `Numeric columns detected: <span class="mono">0</span>`;
-    const used = picks.length ? `Score inputs: <span class="mono">${picks.join(", ")}</span>` : `Score inputs: <span class="mono">(none)</span>`;
-    el("colIntel").innerHTML = `${tcol}<br/>${ncols}<br/>${used}`;
-  }
+    // points
+    pts.forEach(p => {
+      const x = xScale(Math.max(xMin, Math.min(xMax, p.pop)));
+      const y = yScale(p.edge);
 
-  function setRankByOptions() {
-    const sel = el("rankBy");
-    sel.innerHTML = "";
-    const opts = state.rankCandidates.length ? state.rankCandidates : ["__signal"];
-    opts.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c;
-      opt.textContent = (c === "__signal") ? "Signal (0–100)" : c;
-      sel.appendChild(opt);
+      // bubble radius based on |edge|
+      const r = 3 + 10 * Math.min(1, Math.abs(p.edge) / 0.25);
+
+      // color by signal
+      const cls = classify(p.sig);
+      let fill = "rgba(138,160,198,.55)";
+      if (cls === "good") fill = "rgba(46,229,157,.70)";
+      else if (cls === "warn") fill = "rgba(255,209,102,.70)";
+      else fill = "rgba(255,92,124,.65)";
+
+      ctx.fillStyle = fill;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
     });
-    sel.value = "__signal";
+
+    // labels
+    ctx.fillStyle = "rgba(232,238,252,.85)";
+    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+    ctx.fillText("POP →", pad + w - 46, rect.height - 12);
+    ctx.save();
+    ctx.translate(12, pad + 18);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText("EDGE →", 0, 0);
+    ctx.restore();
+
+    $("scatterNote").textContent = `Y-range edge: [${yMin.toFixed(3)}, ${yMax.toFixed(3)}] • N=${pts.length}`;
   }
 
-  function makeShareLink() {
-    const f = getFilterState();
-    const params = new URLSearchParams();
-    params.set("q", f.q);
-    if (f.ticker) params.set("t", f.ticker);
-    params.set("n", String(f.topN));
-    params.set("m", String(f.minSignal));
-    params.set("a", f.onlyActionable ? "1" : "0");
-    params.set("r", f.rankBy || "__signal");
+  function makeShareLink(){
+    const f = getFilters();
+    const p = new URLSearchParams();
+    p.set("q", f.q);
+    if (f.ticker) p.set("t", f.ticker);
+    if (f.spread) p.set("s", f.spread);
+    if (f.setupType) p.set("u", f.setupType);
+    if (f.status) p.set("st", f.status);
+    p.set("so", f.setupOnly ? "1" : "0");
+    p.set("me", String(f.minEdge));
+    p.set("mp", String(f.minPop));
+    p.set("n", String(f.topN));
+    p.set("r", f.rankBy);
     const u = new URL(window.location.href);
-    u.search = params.toString();
+    u.search = p.toString();
     return u.toString();
   }
 
-  function applyFromQueryString() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("q")) el("q").value = params.get("q") || "";
-    if (params.has("n")) el("topN").value = params.get("n") || "50";
-    if (params.has("m")) el("minSignal").value = params.get("m") || "60";
-    if (params.has("a")) el("onlyActionable").value = (params.get("a") === "1") ? "yes" : "no";
-    // ticker + rankBy applied after load
+  function applyFromQueryString(){
+    const p = new URLSearchParams(window.location.search);
+    if (p.has("q")) $("q").value = p.get("q") || "";
+    if (p.has("t")) $("ticker").value = p.get("t") || "";
+    if (p.has("s")) $("spread").value = p.get("s") || "";
+    if (p.has("u")) $("setupType").value = p.get("u") || "";
+    if (p.has("st")) $("status").value = p.get("st") || "";
+    if (p.has("so")) $("setupOnly").value = (p.get("so")==="1") ? "yes" : "no";
+    if (p.has("me")) $("minEdge").value = p.get("me") || "0";
+    if (p.has("mp")) $("minPop").value = p.get("mp") || "0";
+    if (p.has("n")) $("topN").value = p.get("n") || "50";
+    if (p.has("r")) $("rankBy").value = p.get("r") || "signal";
   }
 
-  // -------- Main flow --------
-  async function load() {
-    el("err").textContent = "";
-    el("src").textContent = state.url;
+  function downloadFiltered(view){
+    const cols = Object.keys(state.rows[0] || {});
+    const want = ["ticker","spread","setup_type","Setup","status","edge","pop","spread_mid","dte","exp_date","long_strike","short_strike","tp_spread_px","sl_spread_px","entry_rule","exit_rule"];
+    const header = ["signal", ...want.filter(c => cols.includes(c))];
 
-    const r = await fetch(state.url, { cache: "no-store" });
-    if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
-    const text = await r.text();
-
-    const { headers, data } = parseCSV(text);
-    if (!headers.length || !data.length) throw new Error("CSV appears empty or could not be parsed.");
-
-    state.cols = headers;
-    state.raw = data;
-    state.tickerCol = detectTickerCol(state.cols);
-    state.numericCols = detectNumericCols(state.cols, state.raw);
-
-    state.rankCandidates = pickRankCandidates(state.cols);
-    buildSmartSignal(state.raw);
-    buildActionableFlag(state.raw);
-
-    populateTickerFilter(state.raw);
-    setRankByOptions();
-    renderColumnIntel();
-
-    // apply qs after controls exist
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("t") && state.tickerCol) el("tickerFilter").value = params.get("t") || "";
-    if (params.has("r")) el("rankBy").value = params.get("r") || "__signal";
-  }
-
-  function refresh() {
-    const view = applyFilters(state.raw);
-
-    renderTable(view);
-    renderKPIs(view);
-    renderSpark(view);
-
-    el("loadedAt").textContent = new Date().toLocaleString();
-    el("insightLabel").textContent = "Live";
-
-    // update sort to active selection
-    const f = getFilterState();
-    if (state.sort.col == null) state.sort.col = f.rankBy || "__signal";
-  }
-
-  function downloadFilteredCSV() {
-    const view = applyFilters(state.raw);
-    const cols = ["Signal","Actionable"].concat(state.tickerCol ? [state.tickerCol] : []).concat(state.cols.filter(c => c !== state.tickerCol));
-    const headerLine = cols.join(",");
-    const lines = [headerLine];
-
+    const lines = [header.join(",")];
     view.forEach(r => {
-      const row = [];
-      cols.forEach(c => {
+      const row = header.map(c => {
         let v = "";
-        if (c === "Signal") v = String(r.__signal ?? "");
-        else if (c === "Actionable") v = String(r.__actionable ?? "");
+        if (c === "signal") v = String(r.signal ?? "");
         else v = String(r[c] ?? "");
-        // escape quotes
         if (v.includes('"') || v.includes(",") || v.includes("\n")) v = `"${v.replace(/"/g,'""')}"`;
-        row.push(v);
+        return v;
       });
       lines.push(row.join(","));
     });
@@ -880,51 +786,84 @@
     a.remove();
   }
 
-  // -------- Wire up --------
-  ["q","tickerFilter","rankBy","topN","minSignal","onlyActionable"].forEach(id => {
-    el(id).addEventListener("input", refresh);
-    el(id).addEventListener("change", refresh);
+  async function load(){
+    $("err").textContent = "";
+    $("src").innerHTML = `<a href="${state.url}" target="_blank" rel="noreferrer">${state.url}</a>`;
+
+    const r = await fetch(state.url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
+    const text = await r.text();
+
+    const { headers, data } = parseCSV(text);
+    if (!headers.length || !data.length) throw new Error("CSV appears empty or could not be parsed.");
+
+    // Normalize expected columns exist; keep as-is otherwise
+    state.cols = headers;
+    state.rows = data.map(o => {
+      const r = { ...o };
+      r.signal = computeSignal(r);
+      return r;
+    });
+
+    $("rowsP").textContent = String(state.rows.length);
+    setOptions();
+  }
+
+  function render(){
+    const view = applyFilters();
+    $("rowsF").textContent = String(view.length);
+
+    buildTable(view);
+    renderKPIs(view);
+    renderScatter(view);
+
+    $("loadedAt").textContent = new Date().toLocaleString();
+    $("insightLabel").textContent = "Live";
+  }
+
+  // wiring
+  const inputs = ["q","ticker","spread","setupType","setupOnly","status","minEdge","minPop","topN","rankBy"];
+  inputs.forEach(id => {
+    $(id).addEventListener("input", render);
+    $(id).addEventListener("change", render);
   });
 
-  el("reload").onclick = async () => {
-    el("insightLabel").textContent = "Loading…";
-    try { await load(); refresh(); }
-    catch (e) { el("err").textContent = String(e && e.stack ? e.stack : e); el("insightLabel").textContent = "Error"; }
+  $("reload").onclick = async () => {
+    $("insightLabel").textContent = "Loading…";
+    try { await load(); applyFromQueryString(); render(); }
+    catch(e){ $("err").textContent = String(e && e.stack ? e.stack : e); $("insightLabel").textContent = "Error"; }
   };
 
-  el("copyLink").onclick = async () => {
+  $("copyLink").onclick = async () => {
     const link = makeShareLink();
-    try {
+    try{
       await navigator.clipboard.writeText(link);
-      el("insightLabel").textContent = "Link copied";
-      setTimeout(()=>el("insightLabel").textContent="Live", 1200);
+      $("insightLabel").textContent = "Link copied";
+      setTimeout(()=> $("insightLabel").textContent = "Live", 1200);
     } catch {
       prompt("Copy link:", link);
     }
   };
 
-  el("download").onclick = downloadFilteredCSV;
+  $("download").onclick = () => downloadFiltered(applyFilters());
 
   // init
-  applyFromQueryString();
   (async () => {
-    try {
+    try{
       await load();
-      refresh();
-    } catch (e) {
-      el("err").textContent = String(e && e.stack ? e.stack : e);
-      el("insightLabel").textContent = "Error";
+      applyFromQueryString();
+      render();
+    } catch(e){
+      $("err").textContent = String(e && e.stack ? e.stack : e);
+      $("insightLabel").textContent = "Error";
     }
   })();
 
-  // re-render spark on resize
+  // redraw scatter on resize
   let t=null;
-  window.addEventListener("resize", () => {
-    clearTimeout(t);
-    t = setTimeout(refresh, 120);
-  });
+  window.addEventListener("resize", () => { clearTimeout(t); t=setTimeout(render, 120); });
+
 })();
 </script>
 </body>
 </html>
-
