@@ -355,9 +355,8 @@
       <div>
         <h1>Options Leaders</h1>
         <div class="sub">
-          <!--CSV source:
+          CSV source:
           <a id="srcLink" href="#" target="_blank" rel="noreferrer">TODAY.csv</a>
-          -->
         </div>
       </div>
 
@@ -525,10 +524,8 @@
     </div>
 
     <div class="sub" style="margin-top:12px">
-      <!--
       This page is a lightweight, self-contained dashboard (no external JS libs). It reads the published
       <span class="mono">tables/TODAY.csv</span> file and provides filters + sorting + pagination.
-      -->
     </div>
   </div>
 
@@ -935,7 +932,7 @@
       $("kAvoid").textContent = "0";
       $("kEdge").textContent = "0.000";
       $("kPop").textContent = "0.000";
-      showEmpty("Input has no data rows yet. This can happen pre-market, on holidays, or if the work produced no hits.");
+      showEmpty("TODAY.csv has no data rows yet. This can happen pre-market, on holidays, or if your pipeline produced no rows.");
       return;
     }
 
