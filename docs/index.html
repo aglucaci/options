@@ -306,6 +306,32 @@
       white-space:pre-wrap;
       display:none;
     }
+
+    /* ✅ Empty-state banner (new) */
+    .empty{
+      margin-top:12px;
+      padding:14px 14px;
+      border:1px dashed var(--line2);
+      background:#fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display:none;
+    }
+    .empty .title{
+      font-weight:800;
+      font-size:13px;
+      margin:0 0 6px;
+    }
+    .empty .hint{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .empty .actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+    }
   </style>
 </head>
 <body>
@@ -319,7 +345,7 @@
       <div class="topmeta">
         <span class="chip">Rows <strong id="rowsAll">0</strong></span>
         <span class="chip">Showing <strong id="rowsShown">0</strong></span>
-        <span class="chip">Updated: {}</span>
+        <span class="chip">Updated: <strong id="loadedAt">—</strong></span>
       </div>
     </div>
   </div>
@@ -462,7 +488,19 @@
       </div>
     </div>
 
-    <div class="tableWrap">
+    <!-- ✅ Empty-state banner (new) -->
+    <div class="empty" id="empty">
+      <div class="title">No rows to display</div>
+      <p class="hint" id="emptyMsg">
+        The CSV loaded, but there are no data rows (or your filters removed everything).
+      </p>
+      <div class="actions">
+        <button class="btn" id="emptyReload">Reload</button>
+        <button class="btn ghost" id="emptyReset">Reset filters</button>
+      </div>
+    </div>
+
+    <div class="tableWrap" id="tableWrap">
       <div class="tableTop">
         <div class="left">
           <span class="badge"><span class="dot g"></span>Strong</span>
@@ -733,7 +771,6 @@
             td.textContent = (c === "dte" || c === "time_stop_days") ? String(Math.round(n)) : n.toFixed(3).replace(/\.?0+$/,"");
             td.className = "right mono";
           } else {
-            // long text fields: keep readable but compact
             if (["entry_rule","exit_rule","Reason"].includes(c)){
               td.innerHTML = `<span class="muted">${esc(r[c] || "")}</span>`;
             } else {
@@ -767,6 +804,17 @@
     const box = $("err");
     box.style.display = "none";
     box.textContent = "";
+  }
+
+  /* ✅ Empty-state handler (new) */
+  function showEmpty(message){
+    $("emptyMsg").textContent = message || "No rows to display.";
+    $("empty").style.display = "block";
+    $("tableWrap").style.display = "none";
+  }
+  function hideEmpty(){
+    $("empty").style.display = "none";
+    $("tableWrap").style.display = "block";
   }
 
   function makeShareLink(){
@@ -808,7 +856,7 @@
   }
 
   function downloadFiltered(rows){
-    const cols = tabColumns(); // download current view columns (tab-based)
+    const cols = tabColumns();
     const header = cols.join(",");
     const lines = [header];
     rows.forEach(r => {
@@ -849,9 +897,24 @@
 
     const r = await fetch(state.url, { cache: "no-store" });
     if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
+
     const text = await r.text();
-    const { data } = parseCSV(text);
-    if (!data.length) throw new Error("CSV appears empty or could not be parsed.");
+
+    // ✅ If the file is truly empty (0 bytes), treat as empty.
+    if (!text || !text.trim()){
+      state.rows = [];
+      setSelectOptions();
+      return;
+    }
+
+    const { headers, data } = parseCSV(text);
+
+    // ✅ If only headers exist (or parse yields no data), treat as empty.
+    if (!headers.length || !data.length){
+      state.rows = [];
+      setSelectOptions();
+      return;
+    }
 
     state.rows = data.map(o => ({ ...o, signal: computeSignal(o) }));
     setSelectOptions();
@@ -860,12 +923,37 @@
 
   function render(){
     clearErr();
-    const { out, totalPages } = applyFilters();
-    const view = out; // filtered+sorted full set; table paginates inside renderTable
 
-    renderKPIs(view);
-    renderTable(view, totalPages);
-    updateMeta(state.rows.length, view.length);
+    // ✅ Empty CSV: show empty state immediately
+    if (!state.rows.length){
+      updateMeta(0, 0);
+      $("kStrong").textContent = "0";
+      $("kWatch").textContent = "0";
+      $("kAvoid").textContent = "0";
+      $("kEdge").textContent = "0.000";
+      $("kPop").textContent = "0.000";
+      showEmpty("TODAY.csv has no data rows yet. This can happen pre-market, on holidays, or if your pipeline produced no rows.");
+      return;
+    }
+
+    const { out, totalPages } = applyFilters();
+
+    // ✅ Filters removed everything: show empty state with a helpful hint
+    if (!out.length){
+      updateMeta(state.rows.length, 0);
+      $("kStrong").textContent = "0";
+      $("kWatch").textContent = "0";
+      $("kAvoid").textContent = "0";
+      $("kEdge").textContent = "0.000";
+      $("kPop").textContent = "0.000";
+      showEmpty("No rows match your current filters. Try widening Edge/POP thresholds or switch Setup to “All rows”.");
+      return;
+    }
+
+    hideEmpty();
+    renderKPIs(out);
+    renderTable(out, totalPages);
+    updateMeta(state.rows.length, out.length);
   }
 
   // Wiring
@@ -882,6 +970,10 @@
     try { await load(); applyFromQueryString(); render(); }
     catch(e){ showErr(String(e && e.stack ? e.stack : e)); }
   };
+
+  // ✅ Empty-state buttons
+  $("emptyReload").onclick = () => $("reload").click();
+  $("emptyReset").onclick  = () => $("reset").click();
 
   $("download").onclick = () => {
     const { out } = applyFilters();
@@ -925,6 +1017,8 @@
       render();
     } catch(e){
       showErr(String(e && e.stack ? e.stack : e));
+      // If fetch failed entirely, show empty (nicer UX than blank)
+      showEmpty("Could not load TODAY.csv. Click Reload, or verify the raw GitHub URL is correct and public.");
     }
   })();
 
