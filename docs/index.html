@@ -354,10 +354,6 @@
     <div class="pageHead">
       <div>
         <h1>Options Leaders</h1>
-        <div class="sub">
-          CSV source:
-          <a id="srcLink" href="#" target="_blank" rel="noreferrer">TODAY.csv</a>
-        </div>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Views">
@@ -523,12 +519,6 @@
       </div>
     </div>
 
-    <div class="sub" style="margin-top:12px">
-      This page is a lightweight, self-contained dashboard (no external JS libs). It reads the published
-      <span class="mono">tables/TODAY.csv</span> file and provides filters + sorting + pagination.
-    </div>
-  </div>
-
 <script>
 (() => {
   // Your live CSV
@@ -542,7 +532,8 @@
     sort: { key: "signal", dir: "desc" },
     page: 1,
     pageSize: 25,
-    activeTab: "leaders"
+    activeTab: "leaders",
+    lastUpdated: null
   };
 
   function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -790,7 +781,7 @@
   function updateMeta(totalRows, shownRows){
     $("rowsAll").textContent = String(totalRows);
     $("rowsShown").textContent = String(shownRows);
-    $("loadedAt").textContent = "4/14/2026, 11:16:13 AM";
+    $("loadedAt").textContent = state.lastUpdated || "—";
     $("sortNote").textContent = `Sorted by ${state.sort.key} (${state.sort.dir})`;
     $("hintPill").textContent = `Ranked by ${$("rankBy").value.toUpperCase()}`;
   }
@@ -897,6 +888,9 @@
 
     const r = await fetch(state.url, { cache: "no-store" });
     if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
+
+    const lastModified = r.headers.get('last-modified');
+    state.lastUpdated = lastModified ? new Date(lastModified).toLocaleString() : new Date().toLocaleString();
 
     const text = await r.text();
 
