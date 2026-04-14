@@ -1,0 +1,13 @@
+<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+  <!-- Vintage bakery style background -->
+  <rect width="28" height="28" rx="4" fill="#8B4513"/>
+  <rect x="2" y="2" width="24" height="24" rx="2" fill="#D2691E"/>
+  
+  <!-- Bread loaf icon -->
+  <path d="M6 10 Q6 8 8 8 L20 8 Q22 8 22 10 L22 16 Q22 18 20 18 L8 18 Q6 18 6 16 Z" fill="#F4A460"/>
+  <path d="M8 8 L20 8 L19 6 Q18 5 16 5 L12 5 Q10 5 9 6 Z" fill="#DEB887"/>
+  <circle cx="14" cy="13" r="1" fill="#8B4513"/>
+  
+  <!-- Text "BO" for Bread Options -->
+  <text x="14" y="24" text-anchor="middle" font-family="serif" font-size="8" font-weight="bold" fill="#FFF8DC">BO</text>
+</svg>
