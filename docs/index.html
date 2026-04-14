@@ -790,7 +790,7 @@
   function updateMeta(totalRows, shownRows){
     $("rowsAll").textContent = String(totalRows);
     $("rowsShown").textContent = String(shownRows);
-    $("loadedAt").textContent = new Date().toLocaleString();
+    $("loadedAt").textContent = "4/14/2026, 11:16:13 AM";
     $("sortNote").textContent = `Sorted by ${state.sort.key} (${state.sort.dir})`;
     $("hintPill").textContent = `Ranked by ${$("rankBy").value.toUpperCase()}`;
   }
