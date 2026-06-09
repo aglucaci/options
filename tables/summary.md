@@ -1,6 +1,6 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-06-09_17-20-14
+- Run timestamp: 2026-06-09_19-36-25
 - Rows scanned: 132
 - Valid signals: 0
 - Debit signals: 0
