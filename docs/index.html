@@ -1,1021 +1,999 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options Leaders</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Options Signal Research Dashboard</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <style>
-    :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --line2:#d1d5db;
-      --blue:#1d4ed8;
-      --blue2:#2563eb;
-      --blueSoft:#eff6ff;
-      --green:#059669;
-      --red:#dc2626;
-      --amber:#d97706;
-      --shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
-      --radius: 14px;
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --surface-2: #eef3f8;
+      --ink: #172033;
+      --muted: #5d6b7c;
+      --line: #d9e1ea;
+      --line-strong: #b8c5d3;
+      --blue: #1659b7;
+      --blue-dark: #0f3f82;
+      --green: #087f5b;
+      --amber: #b7791f;
+      --red: #b42318;
+      --shadow: 0 8px 22px rgba(23, 32, 51, 0.08);
+      --radius: 8px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
       font-family: var(--sans);
-      color:var(--text);
-      background:var(--bg);
+      line-height: 1.45;
     }
 
-    /* Top bar */
-    .topbar{
-      position:sticky; top:0; z-index:20;
-      background:#0b1220;
-      color:#e5e7eb;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+    a { color: var(--blue); }
+    button, input, select {
+      font: inherit;
+      border-radius: 6px;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--ink);
     }
-    .topbar .wrap{
-      max-width: 1280px;
-      margin:0 auto;
-      padding:12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+    button {
+      cursor: pointer;
+      padding: 9px 12px;
+      font-weight: 700;
     }
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight:700; letter-spacing:.2px;
-    }
-    .brand .logo{
-      width:28px; height:28px; border-radius:8px;
-      background: linear-gradient(135deg, #1d4ed8, #60a5fa);
-      display:inline-block;
-      box-shadow: 0 8px 20px rgba(29,78,216,.35);
-    }
-    .topmeta{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-      font-size:12px; color:#cbd5e1;
-    }
-    .chip{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:6px 10px;
-      border:1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      border-radius: 999px;
-      white-space:nowrap;
-    }
-    .chip strong{color:#fff}
-
-    /* Page header + tabs */
-    .wrap{max-width:1280px; margin:0 auto; padding:16px}
-    .pageHead{
-      display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;
-      margin-top:6px;
-    }
-    h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin-top:6px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
-    .sub a{color:var(--blue); text-decoration:none}
-    .sub a:hover{text-decoration:underline}
-
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .tab{
-      font-size:12px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: var(--card);
-      color: var(--muted);
-      cursor:pointer;
-      user-select:none;
-    }
-    .tab.active{
-      background: var(--blueSoft);
-      color: var(--blue);
-      border-color: #c7d2fe;
-      font-weight:650;
-    }
-
-    /* Controls panel */
-    .panel{
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-top:12px;
-      overflow:hidden;
-    }
-    .panel .hd{
-      padding:12px 12px;
-      border-bottom:1px solid var(--line);
-      background: linear-gradient(#ffffff, #fafafa);
-      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
-    }
-    .panel .hd .title{
-      font-size:13px;
-      font-weight:700;
-      display:flex; gap:10px; align-items:center;
-    }
-    .pill{
-      font-size:11px;
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color: var(--muted);
-      background:#fff;
-    }
-    .panel .bd{padding:12px}
-
-    .controls{
-      display:grid;
-      grid-template-columns: 1.2fr .7fr .7fr .7fr .7fr .6fr;
-      gap:10px;
-    }
-    @media (max-width: 1100px){
-      .controls{grid-template-columns: 1fr 1fr 1fr}
-    }
-    @media (max-width: 720px){
-      .controls{grid-template-columns: 1fr}
-    }
-    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
-    input, select, button{
-      width:100%;
-      padding:10px 10px;
-      border-radius:10px;
-      border:1px solid var(--line2);
-      background:#fff;
-      color:var(--text);
-      outline:none;
-      font-size:13px;
-    }
-    input::placeholder{color:#9ca3af}
-    input:focus, select:focus{
-      border-color:#93c5fd;
-      box-shadow: 0 0 0 3px rgba(147,197,253,.35);
-    }
-    .btnrow{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .btn{
-      width:auto;
+    button.primary {
+      color: #fff;
       background: var(--blue);
-      color:#fff;
       border-color: var(--blue);
-      font-weight:650;
-      cursor:pointer;
     }
-    .btn:hover{background:var(--blue2); border-color:var(--blue2)}
-    .btn.secondary{
-      background:#fff; color:var(--blue);
-      border-color:#c7d2fe;
+    button.primary:hover { background: var(--blue-dark); }
+    input, select { padding: 9px 10px; width: 100%; }
+
+    .topbar {
+      background: #0c1728;
+      color: #edf4fb;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
     }
-    .btn.secondary:hover{background:var(--blueSoft)}
-    .btn.ghost{
-      background:#fff; color:var(--text);
-      border-color: var(--line);
-      font-weight:600;
+    .wrap {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .topbar .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .brand img { width: 30px; height: 30px; }
+    .mode {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 12px;
+      color: #cdd8e5;
+    }
+    .mode strong { color: #fff; }
+
+    .hero {
+      padding: 34px 0 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%);
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .hero .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
 
-    /* KPI strip */
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap:10px;
-      margin-top:12px;
+    .chip, .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      padding: 6px 10px;
+      font-size: 12px;
+      white-space: nowrap;
     }
-    @media (max-width: 1100px){ .kpis{grid-template-columns: repeat(3, 1fr)} }
-    @media (max-width: 720px){ .kpis{grid-template-columns: repeat(2, 1fr)} }
-    .kpi{
-      border:1px solid var(--line);
-      border-radius: 12px;
-      background:#fff;
-      padding:10px 12px;
-    }
-    .kpi .k{font-size:11px; color:var(--muted)}
-    .kpi .v{margin-top:6px; font-size:18px; font-weight:800; font-family: var(--mono)}
-    .kpi .s{margin-top:6px; font-size:11px; color:var(--muted)}
+    .chip strong, .tag strong { color: var(--ink); }
+    .tag.green { color: var(--green); border-color: #b9e2d2; background: #eefaf5; }
+    .tag.amber { color: var(--amber); border-color: #f1d49a; background: #fff8e8; }
+    .tag.red { color: var(--red); border-color: #f4b8b2; background: #fff1f0; }
+    .tag.blue { color: var(--blue); border-color: #bfd4f0; background: #eef5ff; }
 
-    /* Table */
-    .tableWrap{
-      margin-top:12px;
-      background:#fff;
-      border:1px solid var(--line);
+    main.wrap { padding: 18px 0 42px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+    @media (max-width: 980px) {
+      .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
+    }
+
+    section, .metric {
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:hidden;
     }
-    .tableTop{
-      padding:10px 12px;
-      border-bottom:1px solid var(--line);
-      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
-      background: linear-gradient(#ffffff, #fafafa);
+    section { overflow: hidden; }
+    .section-head {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    .tableTop .left{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-      font-size:12px; color:var(--muted);
+    .section-head h2 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0;
     }
-    .tableTop .right{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    .section-body { padding: 14px; }
+    .section-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
     }
-    .smallSelect{padding:8px 10px; font-size:12px}
-    .smallInput{padding:8px 10px; font-size:12px}
 
-    table{width:100%; border-collapse:collapse; min-width: 1100px}
-    thead th{
-      position:sticky; top:0;
-      background:#fff;
-      border-bottom:1px solid var(--line2);
-      color:#111827;
-      font-size:12px;
-      text-align:left;
-      padding:10px 10px;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
+    .metric {
+      padding: 14px;
+      min-height: 104px;
     }
-    tbody td{
-      border-bottom:1px solid var(--line);
-      padding:10px 10px;
-      font-size:12px;
-      color:#111827;
-      vertical-align:top;
-      white-space:nowrap;
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
-    tbody tr:nth-child(even){background:#fbfbfd}
-    tbody tr:hover{background: #f1f5ff}
-    .right{text-align:right}
-    .mono{font-family: var(--mono)}
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      font-size:11px;
-      color:var(--muted);
-      background:#fff;
-    }
-    .dot{width:7px;height:7px;border-radius:999px;background:#9ca3af}
-    .dot.g{background:var(--green)}
-    .dot.r{background:var(--red)}
-    .dot.a{background:var(--amber)}
-
-    .sig{
-      font-weight:800;
+    .metric .value {
+      margin-top: 8px;
+      font-size: 28px;
       font-family: var(--mono);
-      font-variant-numeric: tabular-nums;
+      font-weight: 900;
+      line-height: 1;
     }
-    .sig.g{color:var(--green)}
-    .sig.r{color:var(--red)}
-    .sig.a{color:var(--amber)}
+    .metric .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-    .muted{color:var(--muted)}
-    .wrapScroll{overflow:auto}
+    .regime {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 760px) {
+      .regime { grid-template-columns: 1fr 1fr; }
+    }
+    .regime-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--surface-2);
+    }
+    .regime-card .k { color: var(--muted); font-size: 12px; }
+    .regime-card .v { margin-top: 5px; font-weight: 800; }
 
-    /* Density */
-    body.compact tbody td, body.compact thead th{padding:7px 8px}
-    body.compact tbody td{font-size:11px}
-    body.compact thead th{font-size:11px}
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px 180px auto;
+      gap: 10px;
+      align-items: end;
+    }
+    @media (max-width: 860px) {
+      .toolbar { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
 
-    .err{
-      margin-top:10px;
-      padding:10px 12px;
-      border:1px solid #fecaca;
-      background:#fff1f2;
-      color:#991b1b;
-      border-radius:12px;
+    .table-scroll { overflow: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      color: #253149;
+      background: #fbfcfe;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+      white-space: nowrap;
+    }
+    tbody tr:hover { background: #f7faff; }
+    .mono { font-family: var(--mono); }
+    .muted { color: var(--muted); }
+    .empty {
+      border: 1px dashed var(--line-strong);
+      background: #fbfcfe;
+      color: var(--muted);
+      padding: 18px;
+      border-radius: 8px;
+    }
+
+    .bars { display: grid; gap: 10px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(160px, 280px) 1fr 60px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .bar-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #e5ebf2;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--blue);
+      min-width: 2px;
+    }
+
+    .notes {
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .notice {
+      border-left: 4px solid var(--blue);
+      background: #f0f6ff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      color: #26466f;
+      font-size: 13px;
+    }
+    .method-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 760px) {
+      .method-list { grid-template-columns: 1fr; }
+    }
+    .method-list h3 {
+      margin: 0 0 5px;
+      font-size: 13px;
+    }
+    .method-list p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #f4b8b2;
+      background: #fff1f0;
+      color: var(--red);
+      padding: 12px;
+      border-radius: 8px;
       font-family: var(--mono);
-      font-size:12px;
-      white-space:pre-wrap;
-      display:none;
-    }
-
-    /* ✅ Empty-state banner (new) */
-    .empty{
-      margin-top:12px;
-      padding:14px 14px;
-      border:1px dashed var(--line2);
-      background:#fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      display:none;
-    }
-    .empty .title{
-      font-weight:800;
-      font-size:13px;
-      margin:0 0 6px;
-    }
-    .empty .hint{
-      margin:0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-    }
-    .empty .actions{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:10px;
+      font-size: 12px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-
   <div class="topbar">
     <div class="wrap">
       <div class="brand">
-        <img src="assets/logo.svg" alt="Bread Options Logo" style="width:28px; height:28px;">
-        <span>Bread Options</span>
+        <img src="assets/logo.svg" alt="Bread Options logo">
+        <span>Bread Options Research</span>
       </div>
-      <div class="topmeta">
-        <span class="chip">Rows <strong id="rowsAll">0</strong></span>
-        <span class="chip">Showing <strong id="rowsShown">0</strong></span>
-        <span class="chip">Updated: <strong id="loadedAt">—</strong></span>
-      </div>
+      <span class="mode">Mode <strong>Research only</strong></span>
     </div>
   </div>
 
-  <div class="wrap">
-    <div class="pageHead">
-      <div>
-        <h1>Options Leaders</h1>
-      </div>
-
-      <div class="tabs" role="tablist" aria-label="Views">
-        <div class="tab active" id="tab-leaders">Leaders</div>
-        <div class="tab" id="tab-setups">Setups</div>
-        <div class="tab" id="tab-risk">Risk</div>
-        <div class="tab" id="tab-rules">Rules</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="hd">
-        <div class="title">
-          Filters
-          <span class="pill" id="hintPill">Ranked by Signal</span>
-        </div>
-        <div class="muted" style="font-size:12px">
-          Tip: click a column header to sort
-        </div>
-      </div>
-
-      <div class="bd">
-        <div class="controls">
-          <div>
-            <label>Search</label>
-            <input id="q" placeholder="ticker, setup_type, symbols, entry_rule…" />
-          </div>
-          <div>
-            <label>Ticker</label>
-            <select id="ticker"><option value="">All</option></select>
-          </div>
-          <div>
-            <label>Spread</label>
-            <select id="spread"><option value="">All</option></select>
-          </div>
-          <div>
-            <label>Setup type</label>
-            <select id="setupType"><option value="">All</option></select>
-          </div>
-          <div>
-            <label>Setup</label>
-            <select id="setupOnly">
-              <option value="yes" selected>YES only</option>
-              <option value="no">All rows</option>
-            </select>
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="status"><option value="">All</option></select>
-          </div>
-
-          <div>
-            <label>Min Edge</label>
-            <input id="minEdge" type="number" step="0.01" value="-1.00" />
-          </div>
-          <div>
-            <label>Min POP</label>
-            <input id="minPop" type="number" step="0.01" value="0.00" />
-          </div>
-          <div>
-            <label>DTE ≤</label>
-            <input id="maxDte" type="number" step="1" value="9999" />
-          </div>
-          <div>
-            <label>Rank by</label>
-            <select id="rankBy">
-              <option value="signal" selected>Signal</option>
-              <option value="edge">Edge</option>
-              <option value="pop">POP</option>
-              <option value="spread_mid">Spread Mid</option>
-              <option value="dte">DTE</option>
-            </select>
-          </div>
-          <div>
-            <label>Rows per page</label>
-            <select id="pageSize">
-              <option value="10">10</option>
-              <option value="25" selected>25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-          <div>
-            <label>Density</label>
-            <select id="density">
-              <option value="comfortable" selected>Comfortable</option>
-              <option value="compact">Compact</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="btnrow">
-          <button class="btn" id="reload">Reload</button>
-          <button class="btn secondary" id="download">Download filtered CSV</button>
-          <button class="btn ghost" id="copyLink">Copy share link</button>
-          <button class="btn ghost" id="reset">Reset filters</button>
-        </div>
-
-        <div class="kpis">
-          <div class="kpi">
-            <div class="k">Strong (≥80)</div>
-            <div class="v" id="kStrong">0</div>
-            <div class="s">signal bucket</div>
-          </div>
-          <div class="kpi">
-            <div class="k">Watch (60–79)</div>
-            <div class="v" id="kWatch">0</div>
-            <div class="s">signal bucket</div>
-          </div>
-          <div class="kpi">
-            <div class="k">Avoid (&lt;60)</div>
-            <div class="v" id="kAvoid">0</div>
-            <div class="s">signal bucket</div>
-          </div>
-          <div class="kpi">
-            <div class="k">Avg Edge</div>
-            <div class="v" id="kEdge">0.000</div>
-            <div class="s">filtered view</div>
-          </div>
-          <div class="kpi">
-            <div class="k">Avg POP</div>
-            <div class="v" id="kPop">0.000</div>
-            <div class="s">filtered view</div>
-          </div>
-        </div>
-
-        <div class="err" id="err"></div>
-      </div>
-    </div>
-
-    <!-- ✅ Empty-state banner (new) -->
-    <div class="empty" id="empty">
-      <div class="title">No rows to display</div>
-      <p class="hint" id="emptyMsg">
-        The CSV loaded, but there are no data rows (or your filters removed everything).
+  <header class="hero">
+    <div class="wrap">
+      <h1>Options Signal Research Dashboard</h1>
+      <p>
+        Automated defined-risk options research evaluating EMA pullbacks, market regime,
+        liquidity, risk, and setup quality. This public view is sanitized for research
+        and education only; it is not a live trading signal service or financial advice.
       </p>
-      <div class="actions">
-        <button class="btn" id="emptyReload">Reload</button>
-        <button class="btn ghost" id="emptyReset">Reset filters</button>
+      <div class="meta">
+        <span class="chip">Last run <strong id="lastRun">Loading...</strong></span>
+        <span class="chip">Published <strong id="publishedAt">Loading...</strong></span>
+        <span class="chip">Dashboard <strong>v0.4.0</strong></span>
       </div>
+      <div class="error" id="errorBox"></div>
     </div>
+  </header>
 
-    <div class="tableWrap" id="tableWrap">
-      <div class="tableTop">
-        <div class="left">
-          <span class="badge"><span class="dot g"></span>Strong</span>
-          <span class="badge"><span class="dot a"></span>Watch</span>
-          <span class="badge"><span class="dot r"></span>Avoid</span>
-          <span class="muted" id="sortNote"></span>
-        </div>
-        <div class="right">
-          <button class="btn ghost" id="prev">Prev</button>
-          <span class="mono muted" id="pageNote">Page 1</span>
-          <button class="btn ghost" id="next">Next</button>
-        </div>
+  <main class="wrap">
+    <div class="grid">
+      <div class="metric span-3">
+        <div class="label">Rows Scanned</div>
+        <div class="value" id="rowsScanned">0</div>
+        <div class="sub">Research universe rows evaluated</div>
+      </div>
+      <div class="metric span-3">
+        <div class="label">Valid Signals</div>
+        <div class="value" id="validSignals">0</div>
+        <div class="sub">Public candidates and watchlist rows</div>
+      </div>
+      <div class="metric span-3">
+        <div class="label">Rejected</div>
+        <div class="value" id="rejectedCount">0</div>
+        <div class="sub">Rows filtered out by the system</div>
+      </div>
+      <div class="metric span-3">
+        <div class="label">Selectivity</div>
+        <div class="value" id="selectivity">0%</div>
+        <div class="sub">Accepted rows divided by scanned rows</div>
       </div>
 
-      <div class="wrapScroll">
-        <table>
-          <thead><tr id="thead"></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+      <section class="span-12">
+        <div class="section-head">
+          <h2>Market Regime Summary</h2>
+          <span class="tag blue" id="regimeTag">Evaluating</span>
+        </div>
+        <div class="section-body">
+          <div class="regime">
+            <div class="regime-card">
+              <div class="k">SPY Trend</div>
+              <div class="v" id="spyTrend">Unknown</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">QQQ Trend</div>
+              <div class="v" id="qqqTrend">Unknown</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">Allowed Bias</div>
+              <div class="v" id="allowedBias">Research only</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">Signal Environment</div>
+              <div class="v" id="signalEnv">Pending data</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="span-8">
+        <div class="section-head">
+          <div>
+            <h2>Today's Public Candidate Set</h2>
+            <p class="section-note">Sanitized view: structure categories and grades, not exact trade instructions.</p>
+          </div>
+          <button class="primary" id="reloadBtn">Reload data</button>
+        </div>
+        <div class="section-body">
+          <div class="toolbar">
+            <div>
+              <label for="candidateSearch">Search candidates</label>
+              <input id="candidateSearch" placeholder="Ticker, setup, decision, reason">
+            </div>
+            <div>
+              <label for="decisionFilter">Decision</label>
+              <select id="decisionFilter">
+                <option value="">All decisions</option>
+                <option value="CANDIDATE">Candidate</option>
+                <option value="WATCH">Watch</option>
+                <option value="PAPER ONLY">Paper only</option>
+              </select>
+            </div>
+            <div>
+              <label for="structureFilter">Structure</label>
+              <select id="structureFilter">
+                <option value="">All structures</option>
+              </select>
+            </div>
+            <button id="downloadCandidates">Download CSV</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Bias</th>
+                <th>Setup</th>
+                <th>Structure</th>
+                <th>DTE</th>
+                <th>Signal</th>
+                <th>Liquidity</th>
+                <th>Decision</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="candidateRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="span-4">
+        <div class="section-head">
+          <h2>Decision Breakdown</h2>
+        </div>
+        <div class="section-body">
+          <div class="bars" id="decisionBars"></div>
+        </div>
+      </section>
+
+      <section class="span-6">
+        <div class="section-head">
+          <h2>Rejection Funnel</h2>
+          <span class="tag red" id="rejectionShare">0 rejected</span>
+        </div>
+        <div class="section-body">
+          <div class="bars" id="rejectionBars"></div>
+        </div>
+      </section>
+
+      <section class="span-6">
+        <div class="section-head">
+          <h2>Rejected Setups Summary</h2>
+          <span class="tag amber">Public reasons only</span>
+        </div>
+        <div class="section-body">
+          <div class="toolbar" style="grid-template-columns: 1fr 170px;">
+            <div>
+              <label for="rejectionSearch">Search rejected rows</label>
+              <input id="rejectionSearch" placeholder="Ticker or reason">
+            </div>
+            <div>
+              <label for="rejectionLimit">Rows</label>
+              <select id="rejectionLimit">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Bias</th>
+                <th>Setup</th>
+                <th>Decision</th>
+                <th>Public Reason</th>
+              </tr>
+            </thead>
+            <tbody id="rejectionRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="span-6">
+        <div class="section-head">
+          <h2>Liquidity And Fillability</h2>
+        </div>
+        <div class="section-body">
+          <div class="regime">
+            <div class="regime-card">
+              <div class="k">Good Quote Rows</div>
+              <div class="v" id="goodQuoteRows">0</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">Wide Market Flags</div>
+              <div class="v" id="wideMarketRows">0</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">Avg Short OI</div>
+              <div class="v" id="avgShortOi">0</div>
+            </div>
+            <div class="regime-card">
+              <div class="k">Avg Long OI</div>
+              <div class="v" id="avgLongOi">0</div>
+            </div>
+          </div>
+          <p class="section-note" style="margin-top:12px;">
+            Fillability uses quote quality, open interest, volume, and bid/ask conditions. The public dashboard avoids exact live limit prices.
+          </p>
+        </div>
+      </section>
+
+      <section class="span-6">
+        <div class="section-head">
+          <h2>Latest Research Log</h2>
+        </div>
+        <div class="section-body">
+          <div class="notes" id="researchNotes"></div>
+        </div>
+      </section>
+
+      <section class="span-8">
+        <div class="section-head">
+          <h2>Methodology</h2>
+        </div>
+        <div class="section-body">
+          <div class="method-list">
+            <div>
+              <h3>Signal model</h3>
+              <p>The system scans a defined universe for securities in trend that pull back toward EMA zones without breaking longer-term structure.</p>
+            </div>
+            <div>
+              <h3>Spread selection</h3>
+              <p>Defined-risk debit and credit spreads are evaluated by structure fit, risk/reward, DTE, volatility, and modeled setup quality.</p>
+            </div>
+            <div>
+              <h3>Liquidity model</h3>
+              <p>Contracts are screened using bid/ask width, quote quality, open interest, volume, and fillability constraints.</p>
+            </div>
+            <div>
+              <h3>Risk filters</h3>
+              <p>The public layer excludes account sizing, broker data, order status, private scoring weights, and exact executable instructions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="span-4">
+        <div class="section-head">
+          <h2>System Status</h2>
+        </div>
+        <div class="section-body">
+          <div class="notes">
+            <div><strong>Workflow:</strong> <span id="workflowStatus">Loaded from public files</span></div>
+            <div><strong>Source table:</strong> <span id="sourceTable" class="mono">Unknown</span></div>
+            <div><strong>Data mode:</strong> Delayed research snapshot</div>
+            <div><strong>Public/private sync:</strong> Sanitized files only</div>
+          </div>
+          <div class="notice" style="margin-top:12px;">
+            Options involve risk. Backtests and modeled fills may differ from live execution.
+          </div>
+        </div>
+      </section>
     </div>
+  </main>
 
-<script>
-(() => {
-  // Your live CSV
-  const DEFAULT_URL = "https://raw.githubusercontent.com/aglucaci/options/refs/heads/main/tables/TODAY.csv";
-
-  const $ = (id) => document.getElementById(id);
-
-  const state = {
-    url: DEFAULT_URL,
-    rows: [],
-    sort: { key: "signal", dir: "desc" },
-    page: 1,
-    pageSize: 25,
-    activeTab: "leaders",
-    lastUpdated: null
-  };
-
-  function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function toNum(v){
-    if (v == null) return null;
-    const s = String(v).trim();
-    if (!s) return null;
-    const cleaned = s.replace(/[$,%]/g,"").replace(/,/g,"");
-    const n = Number(cleaned);
-    return Number.isFinite(n) ? n : null;
-  }
-  function parseCSV(text){
-    const rows = [];
-    let i=0, field="", row=[], inQ=false;
-    while (i < text.length){
-      const c = text[i];
-      if (inQ){
-        if (c === '"' && text[i+1] === '"'){ field+='"'; i+=2; continue; }
-        if (c === '"'){ inQ=false; i++; continue; }
-        field += c; i++; continue;
-      } else {
-        if (c === '"'){ inQ=true; i++; continue; }
-        if (c === ','){ row.push(field); field=""; i++; continue; }
-        if (c === '\r'){ i++; continue; }
-        if (c === '\n'){ row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
-        field += c; i++; continue;
-      }
-    }
-    if (field.length || row.length){ row.push(field); rows.push(row); }
-    if (!rows.length) return { headers: [], data: [] };
-
-    const headers = rows[0].map(h => h.trim());
-    const data = rows.slice(1)
-      .filter(r => r.some(x => String(x||"").trim() !== ""))
-      .map(r => {
-        const o = {};
-        headers.forEach((h, idx) => o[h] = (r[idx] ?? "").trim());
-        return o;
-      });
-    return { headers, data };
-  }
-
-  // Composite signal tailored to your schema (fast scan):
-  // + edge, + pop, small penalty for big spread_mid and long dte
-  function computeSignal(r){
-    const edge = toNum(r.edge) ?? 0;
-    const pop  = toNum(r.pop) ?? 0;
-    const mid  = toNum(r.spread_mid) ?? 0;
-    const dte  = toNum(r.dte) ?? 0;
-
-    const edgeScore = Math.max(-1, Math.min(1, edge / 0.25));       // +/-0.25 edge -> +/-1
-    const popScore  = (Math.max(0, Math.min(1, pop)) * 2) - 1;      // 0..1 -> -1..+1
-    const midScore  = -Math.max(0, Math.min(1, mid / 3.0));         // 0..3 -> 0..-1
-    const dteScore  = -Math.max(0, Math.min(1, dte / 90.0));        // 0..90 -> 0..-1
-
-    const raw = 0.50*edgeScore + 0.34*popScore + 0.10*midScore + 0.06*dteScore;
-    return Math.round(50 + 50 * Math.max(-1, Math.min(1, raw)));
-  }
-
-  function bucket(sig){
-    if (sig >= 80) return "g";
-    if (sig >= 60) return "a";
-    return "r";
-  }
-
-  function uniq(arr){
-    return [...new Set(arr.filter(v => String(v ?? "").trim() !== ""))].sort();
-  }
-
-  function setSelectOptions(){
-    const tick = uniq(state.rows.map(r => r.ticker));
-    const spr  = uniq(state.rows.map(r => r.spread));
-    const stp  = uniq(state.rows.map(r => r.setup_type));
-    const stat = uniq(state.rows.map(r => r.status));
-
-    const fill = (sel, values) => {
-      const cur = sel.value;
-      sel.innerHTML = `<option value="">All</option>` + values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
-      if (values.includes(cur)) sel.value = cur;
-    };
-    fill($("ticker"), tick);
-    fill($("spread"), spr);
-    fill($("setupType"), stp);
-    fill($("status"), stat);
-  }
-
-  function getFilters(){
-    return {
-      q: $("q").value.trim().toLowerCase(),
-      ticker: $("ticker").value.trim(),
-      spread: $("spread").value.trim(),
-      setupType: $("setupType").value.trim(),
-      status: $("status").value.trim(),
-      setupOnly: $("setupOnly").value === "yes",
-      minEdge: Number($("minEdge").value || -1e9),
-      minPop: Number($("minPop").value || -1e9),
-      maxDte: Number($("maxDte").value || 999999),
-      rankBy: $("rankBy").value,
-      pageSize: Number($("pageSize").value || 25),
-      density: $("density").value
-    };
-  }
-
-  function tabColumns(){
-    // “Barchart-like”: show a concise, leaderboard-focused set per tab
-    const base = ["ticker","spread","setup_type","Setup","status","signal"];
-    if (state.activeTab === "leaders"){
-      return base.concat(["edge","pop","spread_mid","dte","exp_date","long_strike","short_strike"]);
-    }
-    if (state.activeTab === "setups"){
-      return base.concat(["Reason","entry_rule","exit_rule","setup_ok","ema21_invalidation"]);
-    }
-    if (state.activeTab === "risk"){
-      return base.concat(["breakeven","max_profit","max_loss","spread_delta","spread_theta","spread_vega"]);
-    }
-    // rules
-    return base.concat(["entry_rule","exit_rule","tp_spread_px","sl_spread_px","time_stop_days","take_profit_frac"]);
-  }
-
-  function applyFilters(){
-    const f = getFilters();
-    state.pageSize = f.pageSize;
-
-    document.body.classList.toggle("compact", f.density === "compact");
-
-    let out = state.rows;
-
-    if (f.setupOnly) out = out.filter(r => String(r.Setup||"").toUpperCase() === "YES");
-    if (f.ticker) out = out.filter(r => r.ticker === f.ticker);
-    if (f.spread) out = out.filter(r => r.spread === f.spread);
-    if (f.setupType) out = out.filter(r => r.setup_type === f.setupType);
-    if (f.status) out = out.filter(r => (r.status || "") === f.status);
-
-    out = out.filter(r => (toNum(r.edge) ?? -1e9) >= f.minEdge);
-    out = out.filter(r => (toNum(r.pop)  ?? -1e9) >= f.minPop);
-    out = out.filter(r => (toNum(r.dte)  ?? 0) <= f.maxDte);
-
-    if (f.q){
-      const keys = ["ticker","spread","setup_type","Reason","entry_rule","exit_rule","long_symbol","short_symbol","status"];
-      out = out.filter(r => keys.some(k => String(r[k] ?? "").toLowerCase().includes(f.q)));
-    }
-
-    // sort
-    const key = f.rankBy;
-    const dir = state.sort.key === key ? state.sort.dir : "desc";
-    out = [...out].sort((a,b) => {
-      let av = (key === "signal") ? a.signal : toNum(a[key]);
-      let bv = (key === "signal") ? b.signal : toNum(b[key]);
-      if (av != null && bv != null) return dir === "asc" ? av-bv : bv-av;
-      const as = String(a[key] ?? "");
-      const bs = String(b[key] ?? "");
-      return dir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
-    });
-
-    // pagination clamp
-    const totalPages = Math.max(1, Math.ceil(out.length / state.pageSize));
-    if (state.page > totalPages) state.page = totalPages;
-    if (state.page < 1) state.page = 1;
-
-    return { out, totalPages };
-  }
-
-  function renderKPIs(view){
-    const sigs = view.map(r => r.signal ?? 0);
-    const strong = sigs.filter(s => s >= 80).length;
-    const watch  = sigs.filter(s => s >= 60 && s < 80).length;
-    const avoid  = sigs.filter(s => s < 60).length;
-
-    const edges = view.map(r => toNum(r.edge)).filter(v => v != null);
-    const pops  = view.map(r => toNum(r.pop)).filter(v => v != null);
-
-    const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
-
-    $("kStrong").textContent = String(strong);
-    $("kWatch").textContent  = String(watch);
-    $("kAvoid").textContent  = String(avoid);
-    $("kEdge").textContent   = avg(edges).toFixed(3);
-    $("kPop").textContent    = avg(pops).toFixed(3);
-  }
-
-  function renderTable(view, totalPages){
-    const cols = tabColumns();
-    const head = $("thead");
-    const body = $("tbody");
-    head.innerHTML = "";
-    body.innerHTML = "";
-
-    cols.forEach(c => {
-      const th = document.createElement("th");
-      th.textContent = c;
-      th.onclick = () => {
-        const sortKey = (c === "signal") ? "signal" : c;
-        if (state.sort.key === sortKey) state.sort.dir = (state.sort.dir === "asc" ? "desc" : "asc");
-        else { state.sort.key = sortKey; state.sort.dir = "desc"; }
-        $("rankBy").value = (["signal","edge","pop","spread_mid","dte"].includes(sortKey)) ? sortKey : "signal";
-        render();
+  <script>
+    (() => {
+      const RAW_BASE = "https://raw.githubusercontent.com/aglucaci/options/refs/heads/main/tables/";
+      const FILES = {
+        today: "TODAY.csv",
+        debit: "TODAY_DEBIT.csv",
+        credit: "TODAY_CREDIT.csv",
+        rejected: "rejected_trades_TODAY.csv",
+        summary: "summary.md",
+        meta: "last_run.json"
       };
-      head.appendChild(th);
-    });
 
-    const start = (state.page - 1) * state.pageSize;
-    const pageRows = view.slice(start, start + state.pageSize);
+      const $ = (id) => document.getElementById(id);
+      const state = { today: [], debit: [], credit: [], rejected: [], summary: "", meta: {}, candidates: [] };
 
-    pageRows.forEach(r => {
-      const tr = document.createElement("tr");
-      cols.forEach(c => {
-        const td = document.createElement("td");
+      function esc(value) {
+        return String(value ?? "").replace(/[&<>"']/g, c => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[c]));
+      }
 
-        if (c === "signal"){
-          const sig = r.signal ?? 0;
-          const b = bucket(sig);
-          td.innerHTML = `<span class="sig ${b}">${sig}</span>`;
-          td.className = "right";
-        } else if (c === "Setup"){
-          const v = String(r.Setup || "").toUpperCase();
-          td.innerHTML = v === "YES"
-            ? `<span class="badge"><span class="dot g"></span>YES</span>`
-            : `<span class="badge"><span class="dot r"></span>NO</span>`;
-        } else if (c === "status"){
-          const v = String(r.status || "").toLowerCase();
-          const b = (v === "ok") ? "g" : (v ? "a" : "r");
-          td.innerHTML = `<span class="badge"><span class="dot ${b}"></span>${esc(r.status || "")}</span>`;
-        } else {
-          const n = toNum(r[c]);
-          if (n != null && ["edge","pop","spread_mid","dte","breakeven","max_profit","max_loss","spread_delta","spread_theta","spread_vega","tp_spread_px","sl_spread_px","take_profit_frac"].includes(c)){
-            td.textContent = (c === "dte" || c === "time_stop_days") ? String(Math.round(n)) : n.toFixed(3).replace(/\.?0+$/,"");
-            td.className = "right mono";
-          } else {
-            if (["entry_rule","exit_rule","Reason"].includes(c)){
-              td.innerHTML = `<span class="muted">${esc(r[c] || "")}</span>`;
-            } else {
-              td.textContent = r[c] ?? "";
-            }
-            if (["ticker","spread","setup_type","exp_date","long_symbol","short_symbol"].includes(c)) td.classList.add("mono");
+      function toNum(value) {
+        if (value == null) return null;
+        const n = Number(String(value).trim().replace(/[$,%]/g, "").replace(/,/g, ""));
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function fmtInt(value) {
+        const n = Number(value || 0);
+        return Number.isFinite(n) ? n.toLocaleString() : "0";
+      }
+
+      function fmtTime(value) {
+        if (!value) return "Unknown";
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return String(value);
+        return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+      }
+
+      function parseCSV(text) {
+        const rows = [];
+        let i = 0, field = "", row = [], quoted = false;
+        while (i < text.length) {
+          const c = text[i];
+          if (quoted) {
+            if (c === '"' && text[i + 1] === '"') { field += '"'; i += 2; continue; }
+            if (c === '"') { quoted = false; i++; continue; }
+            field += c; i++; continue;
           }
+          if (c === '"') { quoted = true; i++; continue; }
+          if (c === ",") { row.push(field); field = ""; i++; continue; }
+          if (c === "\r") { i++; continue; }
+          if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+          field += c; i++;
         }
-        tr.appendChild(td);
+        if (field.length || row.length) { row.push(field); rows.push(row); }
+        if (!rows.length) return [];
+        const headers = rows[0].map(h => h.trim());
+        return rows.slice(1)
+          .filter(r => r.some(v => String(v || "").trim()))
+          .map(r => Object.fromEntries(headers.map((h, idx) => [h, String(r[idx] ?? "").trim()])));
+      }
+
+      async function fetchText(file) {
+        const url = RAW_BASE + file + "?t=" + Date.now();
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error(file + " failed with HTTP " + res.status);
+        return res.text();
+      }
+
+      function parseSummaryMetrics(summary) {
+        const metric = (label) => {
+          const re = new RegExp("-\\s*" + label + ":\\s*([^\\n]+)", "i");
+          const match = summary.match(re);
+          return match ? match[1].trim() : "";
+        };
+        return {
+          runTimestamp: metric("Run timestamp"),
+          rowsScanned: toNum(metric("Rows scanned")) ?? 0,
+          validSignals: toNum(metric("Valid signals")) ?? 0,
+          debitSignals: toNum(metric("Debit signals")) ?? 0,
+          creditSignals: toNum(metric("Credit signals")) ?? 0,
+          rejectedRows: toNum(metric("Rejected rows")) ?? 0
+        };
+      }
+
+      function countBy(rows, keyFn) {
+        const counts = new Map();
+        rows.forEach(row => {
+          const key = keyFn(row) || "Uncategorized";
+          counts.set(key, (counts.get(key) || 0) + 1);
+        });
+        return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+      }
+
+      function structureType(row) {
+        const spread = String(row.spread || "").toLowerCase();
+        const setup = String(row.setup_type || "");
+        if (spread === "credit") return setup.includes("pullup") ? "Put credit spread" : "Credit spread";
+        if (spread === "debit") return setup.includes("pullback") ? "Call debit spread" : "Debit spread";
+        return spread ? spread.charAt(0).toUpperCase() + spread.slice(1) + " spread" : "Defined-risk spread";
+      }
+
+      function bias(row) {
+        const spread = String(row.spread || "").toLowerCase();
+        const setup = String(row.setup_type || "").toLowerCase();
+        if (spread === "debit" || setup.includes("pullback")) return "Bullish";
+        if (spread === "credit" || setup.includes("pullup")) return "Neutral/Bearish";
+        return "Research";
+      }
+
+      function dteBucket(row) {
+        const dte = toNum(row.dte);
+        if (dte == null || dte < 0) return "Pending";
+        if (dte <= 21) return "0-21";
+        if (dte <= 45) return "22-45";
+        if (dte <= 60) return "46-60";
+        return "60+";
+      }
+
+      function gradeFromScore(score) {
+        const n = toNum(score);
+        if (n == null) return "N/A";
+        if (n >= 0.80 || n >= 80) return "A";
+        if (n >= 0.65 || n >= 65) return "B";
+        if (n >= 0.50 || n >= 50) return "C";
+        return "D";
+      }
+
+      function liquidityGrade(row) {
+        const shortGood = String(row.short_good_quote || "").toLowerCase() === "true";
+        const longGood = String(row.long_good_quote || "").toLowerCase() === "true";
+        const shortOi = toNum(row.short_oi) ?? 0;
+        const longOi = toNum(row.long_oi) ?? 0;
+        const shortWide = toNum(row.short_bid_ask_pct) ?? 999;
+        const longWide = toNum(row.long_bid_ask_pct) ?? 999;
+        if (shortGood && longGood && shortOi >= 100 && longOi >= 100 && shortWide <= 0.25 && longWide <= 0.25) return "A";
+        if ((shortGood || longGood) && shortOi + longOi >= 100 && Math.max(shortWide, longWide) <= 0.50) return "B";
+        if (shortOi + longOi > 0) return "C";
+        return "N/A";
+      }
+
+      function signalGrade(row) {
+        const score = toNum(row.risk_adjusted_score);
+        if (score != null) return gradeFromScore(score);
+        const edge = toNum(row.edge);
+        const pop = toNum(row.pop);
+        if (edge == null && pop == null) return "N/A";
+        const composite = ((edge || 0) * 2) + (pop || 0);
+        if (composite >= 1.0) return "A";
+        if (composite >= 0.6) return "B";
+        if (composite >= 0.3) return "C";
+        return "D";
+      }
+
+      function decisionFor(row) {
+        const setup = String(row.Setup || "").toUpperCase();
+        const status = String(row.status || "").toLowerCase();
+        if (setup !== "YES" || status.includes("reject") || status.includes("not met")) return "REJECT";
+        if (liquidityGrade(row) === "A" && ["A", "B"].includes(signalGrade(row))) return "CANDIDATE";
+        if (liquidityGrade(row) === "N/A") return "PAPER ONLY";
+        return "WATCH";
+      }
+
+      function publicReason(row) {
+        const reason = row.signal_reason || row.Reason || row.status || "";
+        if (!reason) return "Signal passed public research filters.";
+        return reason.replace(/_/g, " ");
+      }
+
+      function buildCandidates() {
+        const rows = [...state.today, ...state.debit, ...state.credit];
+        const unique = new Map();
+        rows.forEach(row => {
+          const key = [row.ticker, row.spread, row.setup_type, row.exp_date, row.dte].join("|");
+          unique.set(key, row);
+        });
+        return [...unique.values()]
+          .filter(row => decisionFor(row) !== "REJECT")
+          .map(row => ({
+            ticker: row.ticker || "",
+            bias: bias(row),
+            setup: row.setup_type || "EMA setup",
+            structure: structureType(row),
+            dte: dteBucket(row),
+            signal: signalGrade(row),
+            liquidity: liquidityGrade(row),
+            decision: decisionFor(row),
+            reason: publicReason(row)
+          }));
+      }
+
+      function renderBars(id, items, total) {
+        const host = $(id);
+        if (!items.length) {
+          host.innerHTML = '<div class="empty">No data available yet.</div>';
+          return;
+        }
+        const max = Math.max(...items.map(([, count]) => count), 1);
+        host.innerHTML = items.map(([label, count]) => {
+          const pct = total ? Math.round((count / total) * 100) : 0;
+          const width = Math.max(3, Math.round((count / max) * 100));
+          return `
+            <div class="bar-row">
+              <div>${esc(label)}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+              <div class="mono">${fmtInt(count)} (${pct}%)</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderCandidateFilters() {
+        const structures = [...new Set(state.candidates.map(r => r.structure).filter(Boolean))].sort();
+        $("structureFilter").innerHTML = '<option value="">All structures</option>' +
+          structures.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
+      }
+
+      function renderCandidates() {
+        const q = $("candidateSearch").value.trim().toLowerCase();
+        const decision = $("decisionFilter").value;
+        const structure = $("structureFilter").value;
+        const rows = state.candidates.filter(row => {
+          const text = Object.values(row).join(" ").toLowerCase();
+          return (!q || text.includes(q)) &&
+            (!decision || row.decision === decision) &&
+            (!structure || row.structure === structure);
+        });
+        if (!rows.length) {
+          $("candidateRows").innerHTML = `<tr><td colspan="9"><div class="empty">No public candidates today. The system scanned the universe and rejected all rows that failed current research filters.</div></td></tr>`;
+          return rows;
+        }
+        $("candidateRows").innerHTML = rows.map(row => `
+          <tr>
+            <td class="mono"><strong>${esc(row.ticker)}</strong></td>
+            <td>${esc(row.bias)}</td>
+            <td>${esc(row.setup)}</td>
+            <td>${esc(row.structure)}</td>
+            <td class="mono">${esc(row.dte)}</td>
+            <td><span class="tag blue">${esc(row.signal)}</span></td>
+            <td><span class="tag ${row.liquidity === "A" ? "green" : row.liquidity === "N/A" ? "amber" : "blue"}">${esc(row.liquidity)}</span></td>
+            <td><span class="tag ${row.decision === "CANDIDATE" ? "green" : row.decision === "WATCH" ? "amber" : "blue"}">${esc(row.decision)}</span></td>
+            <td>${esc(row.reason)}</td>
+          </tr>
+        `).join("");
+        return rows;
+      }
+
+      function renderRejections() {
+        const q = $("rejectionSearch").value.trim().toLowerCase();
+        const limit = Number($("rejectionLimit").value || 25);
+        const rows = state.rejected
+          .filter(row => !q || [row.ticker, row.setup_type, row.Reason, row.status].join(" ").toLowerCase().includes(q))
+          .slice(0, limit);
+        if (!rows.length) {
+          $("rejectionRows").innerHTML = `<tr><td colspan="5"><div class="empty">No rejected rows match this search.</div></td></tr>`;
+          return;
+        }
+        $("rejectionRows").innerHTML = rows.map(row => `
+          <tr>
+            <td class="mono"><strong>${esc(row.ticker)}</strong></td>
+            <td>${esc(bias(row))}</td>
+            <td>${esc(row.setup_type || "EMA setup")}</td>
+            <td><span class="tag red">REJECT</span></td>
+            <td>${esc(publicReason(row))}</td>
+          </tr>
+        `).join("");
+      }
+
+      function renderLiquidity(rows) {
+        const good = rows.filter(r =>
+          String(r.short_good_quote || "").toLowerCase() === "true" ||
+          String(r.long_good_quote || "").toLowerCase() === "true"
+        ).length;
+        const wide = rows.filter(r =>
+          (toNum(r.short_bid_ask_pct) ?? 0) > 0.50 ||
+          (toNum(r.long_bid_ask_pct) ?? 0) > 0.50
+        ).length;
+        const avg = (vals) => vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+        $("goodQuoteRows").textContent = fmtInt(good);
+        $("wideMarketRows").textContent = fmtInt(wide);
+        $("avgShortOi").textContent = fmtInt(Math.round(avg(rows.map(r => toNum(r.short_oi)).filter(v => v != null))));
+        $("avgLongOi").textContent = fmtInt(Math.round(avg(rows.map(r => toNum(r.long_oi)).filter(v => v != null))));
+      }
+
+      function renderRegime(rows) {
+        const row = rows.find(r => r.regime_note) || {};
+        const note = row.regime_note || "";
+        const spyAbove = String(row.regime_SPY_above_ema50 || "").toLowerCase() === "true" || /SPY:.*above=true/i.test(note);
+        const qqqAbove = String(row.regime_QQQ_above_ema50 || "").toLowerCase() === "true" || /QQQ:.*above=true/i.test(note);
+        $("spyTrend").textContent = spyAbove ? "Positive vs EMA50" : "Below / unavailable";
+        $("qqqTrend").textContent = qqqAbove ? "Positive vs EMA50" : "Below / unavailable";
+        $("allowedBias").textContent = spyAbove && qqqAbove ? "Bullish and selective neutral" : "Defensive or no new signal";
+        $("signalEnv").textContent = spyAbove && qqqAbove ? "Supportive but selective" : "Caution";
+        $("regimeTag").textContent = spyAbove && qqqAbove ? "Risk-on / supportive" : "Caution";
+        $("regimeTag").className = "tag " + (spyAbove && qqqAbove ? "green" : "amber");
+      }
+
+      function renderNotes(metrics) {
+        const rejectionTop = countBy(state.rejected, r => publicReason(r))[0];
+        const dateText = metrics.runTimestamp ? metrics.runTimestamp.replace("_", " ") : fmtTime(state.meta.last_run_utc);
+        $("researchNotes").innerHTML = `
+          <div><strong>${esc(dateText)}:</strong> The system scanned ${fmtInt(metrics.rowsScanned || state.rejected.length)} rows and found ${fmtInt(metrics.validSignals || state.candidates.length)} public valid signals.</div>
+          <div>Rejected rows remain visible in aggregate because selectivity is part of the research process. ${rejectionTop ? `The leading rejection category was "${esc(rejectionTop[0])}".` : ""}</div>
+          <div class="notice">Research output only. Nothing here is a recommendation to buy, sell, enter, or exit a security or derivative contract.</div>
+        `;
+      }
+
+      function downloadRows(rows) {
+        const cols = ["ticker", "bias", "setup", "structure", "dte", "signal", "liquidity", "decision", "reason"];
+        const lines = [cols.join(",")].concat(rows.map(row => cols.map(col => {
+          const value = String(row[col] ?? "");
+          return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+        }).join(",")));
+        const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `public_candidates_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      function showError(error) {
+        $("errorBox").style.display = "block";
+        $("errorBox").textContent = String(error && error.stack ? error.stack : error);
+      }
+
+      async function load() {
+        $("errorBox").style.display = "none";
+        const [today, debit, credit, rejected, summary, meta] = await Promise.all([
+          fetchText(FILES.today),
+          fetchText(FILES.debit),
+          fetchText(FILES.credit),
+          fetchText(FILES.rejected),
+          fetchText(FILES.summary),
+          fetchText(FILES.meta)
+        ]);
+
+        state.today = parseCSV(today);
+        state.debit = parseCSV(debit);
+        state.credit = parseCSV(credit);
+        state.rejected = parseCSV(rejected);
+        state.summary = summary;
+        state.meta = JSON.parse(meta);
+        state.candidates = buildCandidates();
+
+        const metrics = parseSummaryMetrics(summary);
+        const scanned = metrics.rowsScanned || state.rejected.length + state.candidates.length;
+        const valid = metrics.validSignals || state.candidates.length;
+        const rejectedCount = metrics.rejectedRows || state.rejected.length;
+
+        $("lastRun").textContent = fmtTime(state.meta.last_run_utc || metrics.runTimestamp);
+        $("publishedAt").textContent = fmtTime(state.meta.published_utc);
+        $("sourceTable").textContent = state.meta.source_table || "Unknown";
+        $("rowsScanned").textContent = fmtInt(scanned);
+        $("validSignals").textContent = fmtInt(valid);
+        $("rejectedCount").textContent = fmtInt(rejectedCount);
+        $("selectivity").textContent = scanned ? Math.round((valid / scanned) * 100) + "%" : "0%";
+        $("rejectionShare").textContent = fmtInt(rejectedCount) + " rejected";
+
+        renderRegime([...state.today, ...state.rejected]);
+        renderCandidateFilters();
+        renderCandidates();
+        renderRejections();
+        const decisionItems = [
+          ...state.candidates.map(row => ({ decision: row.decision })),
+          ...state.rejected.map(() => ({ decision: "REJECT" }))
+        ];
+        renderBars("decisionBars", countBy(decisionItems, r => r.decision), Math.max(scanned, 1));
+        renderBars("rejectionBars", countBy(state.rejected, r => publicReason(r)).slice(0, 8), Math.max(rejectedCount, 1));
+        renderLiquidity([...state.today, ...state.debit, ...state.credit, ...state.rejected]);
+        renderNotes(metrics);
+      }
+
+      ["candidateSearch", "decisionFilter", "structureFilter"].forEach(id => {
+        $(id).addEventListener("input", renderCandidates);
+        $(id).addEventListener("change", renderCandidates);
       });
-      body.appendChild(tr);
-    });
-
-    $("pageNote").textContent = `Page ${state.page} / ${totalPages}`;
-  }
-
-  function updateMeta(totalRows, shownRows){
-    $("rowsAll").textContent = String(totalRows);
-    $("rowsShown").textContent = String(shownRows);
-    $("loadedAt").textContent = state.lastUpdated || "";
-    $("sortNote").textContent = `Sorted by ${state.sort.key} (${state.sort.dir})`;
-    $("hintPill").textContent = `Ranked by ${$("rankBy").value.toUpperCase()}`;
-  }
-
-  function showErr(msg){
-    const box = $("err");
-    box.style.display = "block";
-    box.textContent = msg;
-  }
-  function clearErr(){
-    const box = $("err");
-    box.style.display = "none";
-    box.textContent = "";
-  }
-
-  /* ✅ Empty-state handler (new) */
-  function showEmpty(message){
-    $("emptyMsg").textContent = message || "No rows to display.";
-    $("empty").style.display = "block";
-    $("tableWrap").style.display = "none";
-  }
-  function hideEmpty(){
-    $("empty").style.display = "none";
-    $("tableWrap").style.display = "block";
-  }
-
-  function makeShareLink(){
-    const f = getFilters();
-    const p = new URLSearchParams();
-    p.set("q", f.q);
-    if (f.ticker) p.set("t", f.ticker);
-    if (f.spread) p.set("s", f.spread);
-    if (f.setupType) p.set("u", f.setupType);
-    if (f.status) p.set("st", f.status);
-    p.set("so", f.setupOnly ? "1" : "0");
-    p.set("me", String(f.minEdge));
-    p.set("mp", String(f.minPop));
-    p.set("md", String(f.maxDte));
-    p.set("rb", f.rankBy);
-    p.set("ps", String(f.pageSize));
-    p.set("dn", f.density);
-    p.set("tab", state.activeTab);
-    const u = new URL(window.location.href);
-    u.search = p.toString();
-    return u.toString();
-  }
-
-  function applyFromQueryString(){
-    const p = new URLSearchParams(window.location.search);
-    if (p.has("q")) $("q").value = p.get("q") || "";
-    if (p.has("t")) $("ticker").value = p.get("t") || "";
-    if (p.has("s")) $("spread").value = p.get("s") || "";
-    if (p.has("u")) $("setupType").value = p.get("u") || "";
-    if (p.has("st")) $("status").value = p.get("st") || "";
-    if (p.has("so")) $("setupOnly").value = (p.get("so")==="1") ? "yes" : "no";
-    if (p.has("me")) $("minEdge").value = p.get("me") || "-1";
-    if (p.has("mp")) $("minPop").value = p.get("mp") || "0";
-    if (p.has("md")) $("maxDte").value = p.get("md") || "9999";
-    if (p.has("rb")) $("rankBy").value = p.get("rb") || "signal";
-    if (p.has("ps")) $("pageSize").value = p.get("ps") || "25";
-    if (p.has("dn")) $("density").value = p.get("dn") || "comfortable";
-    if (p.has("tab")) setTab(p.get("tab") || "leaders", true);
-  }
-
-  function downloadFiltered(rows){
-    const cols = tabColumns();
-    const header = cols.join(",");
-    const lines = [header];
-    rows.forEach(r => {
-      const row = cols.map(c => {
-        let v = (c === "signal") ? String(r.signal ?? "") : String(r[c] ?? "");
-        if (v.includes('"') || v.includes(",") || v.includes("\n")) v = `"${v.replace(/"/g,'""')}"`;
-        return v;
+      ["rejectionSearch", "rejectionLimit"].forEach(id => {
+        $(id).addEventListener("input", renderRejections);
+        $(id).addEventListener("change", renderRejections);
       });
-      lines.push(row.join(","));
-    });
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `TODAY_filtered_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
+      $("reloadBtn").addEventListener("click", () => load().catch(showError));
+      $("downloadCandidates").addEventListener("click", () => downloadRows(renderCandidates() || []));
 
-  function setTab(tab, skipRender){
-    state.activeTab = tab;
-
-    const map = {
-      "leaders": $("tab-leaders"),
-      "setups": $("tab-setups"),
-      "risk": $("tab-risk"),
-      "rules": $("tab-rules")
-    };
-    Object.entries(map).forEach(([k, el]) => el.classList.toggle("active", k === tab));
-
-    if (!skipRender) render();
-  }
-
-  async function load(){
-    clearErr();
-
-    const r = await fetch(state.url, { cache: "no-store" });
-    if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
-
-    const lastModified = r.headers.get('last-modified');
-    state.lastUpdated = lastModified ? new Date(lastModified).toLocaleString() : "4/14/2026, 11:30:16 AM";
-
-    const text = await r.text();
-
-    // ✅ If the file is truly empty (0 bytes), treat as empty.
-    if (!text || !text.trim()){
-      state.rows = [];
-      setSelectOptions();
-      return;
-    }
-
-    const { headers, data } = parseCSV(text);
-
-    // ✅ If only headers exist (or parse yields no data), treat as empty.
-    if (!headers.length || !data.length){
-      state.rows = [];
-      setSelectOptions();
-      return;
-    }
-
-    state.rows = data.map(o => ({ ...o, signal: computeSignal(o) }));
-    setSelectOptions();
-    $("rowsAll").textContent = String(state.rows.length);
-  }
-
-  function render(){
-    clearErr();
-
-    // ✅ Empty CSV: show empty state immediately
-    if (!state.rows.length){
-      updateMeta(0, 0);
-      $("kStrong").textContent = "0";
-      $("kWatch").textContent = "0";
-      $("kAvoid").textContent = "0";
-      $("kEdge").textContent = "0.000";
-      $("kPop").textContent = "0.000";
-      showEmpty("TODAY.csv has no data rows yet. This can happen pre-market, on holidays, or if your pipeline produced no rows.");
-      return;
-    }
-
-    const { out, totalPages } = applyFilters();
-
-    // ✅ Filters removed everything: show empty state with a helpful hint
-    if (!out.length){
-      updateMeta(state.rows.length, 0);
-      $("kStrong").textContent = "0";
-      $("kWatch").textContent = "0";
-      $("kAvoid").textContent = "0";
-      $("kEdge").textContent = "0.000";
-      $("kPop").textContent = "0.000";
-      showEmpty("No rows match your current filters. Try widening Edge/POP thresholds or switch Setup to “All rows”.");
-      return;
-    }
-
-    hideEmpty();
-    renderKPIs(out);
-    renderTable(out, totalPages);
-    updateMeta(state.rows.length, out.length);
-  }
-
-  // Wiring
-  const inputs = ["q","ticker","spread","setupType","setupOnly","status","minEdge","minPop","maxDte","rankBy","pageSize","density"];
-  inputs.forEach(id => {
-    $(id).addEventListener("input", () => { state.page = 1; render(); });
-    $(id).addEventListener("change", () => { state.page = 1; render(); });
-  });
-
-  $("prev").onclick = () => { state.page = Math.max(1, state.page - 1); render(); };
-  $("next").onclick = () => { state.page = state.page + 1; render(); };
-
-  $("reload").onclick = async () => {
-    try { await load(); applyFromQueryString(); render(); }
-    catch(e){ showErr(String(e && e.stack ? e.stack : e)); }
-  };
-
-  // ✅ Empty-state buttons
-  $("emptyReload").onclick = () => $("reload").click();
-  $("emptyReset").onclick  = () => $("reset").click();
-
-  $("download").onclick = () => {
-    const { out } = applyFilters();
-    downloadFiltered(out);
-  };
-
-  $("copyLink").onclick = async () => {
-    const link = makeShareLink();
-    try { await navigator.clipboard.writeText(link); }
-    catch { prompt("Copy link:", link); }
-  };
-
-  $("reset").onclick = () => {
-    $("q").value = "";
-    $("ticker").value = "";
-    $("spread").value = "";
-    $("setupType").value = "";
-    $("status").value = "";
-    $("setupOnly").value = "yes";
-    $("minEdge").value = "-1.00";
-    $("minPop").value = "0.00";
-    $("maxDte").value = "9999";
-    $("rankBy").value = "signal";
-    $("pageSize").value = "25";
-    $("density").value = "comfortable";
-    state.page = 1;
-    setTab("leaders", true);
-    render();
-  };
-
-  $("tab-leaders").onclick = () => setTab("leaders");
-  $("tab-setups").onclick  = () => setTab("setups");
-  $("tab-risk").onclick    = () => setTab("risk");
-  $("tab-rules").onclick   = () => setTab("rules");
-
-  // Init
-  (async () => {
-    try{
-      await load();
-      applyFromQueryString();
-      render();
-    } catch(e){
-      showErr(String(e && e.stack ? e.stack : e));
-      // If fetch failed entirely, show empty (nicer UX than blank)
-      showEmpty("Could not load TODAY.csv. Click Reload, or verify the raw GitHub URL is correct and public.");
-    }
-  })();
-
-})();
-</script>
+      load().catch(showError);
+    })();
+  </script>
 </body>
 </html>
