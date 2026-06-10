@@ -1,6 +1,6 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-06-10_16-49-05
+- Run timestamp: 2026-06-10_19-56-17
 - Rows scanned: 132
 - Valid signals: 0
 - Debit signals: 0
@@ -13,9 +13,8 @@ No valid signals.
 
 ## Top Rejection Reasons
 
-- setup not met: 129
-- market regime blocks bearish credit spread: 2
-- short leg illiquid (vol=3, oi=20): 1
+- setup not met: 127
+- market regime blocks bearish credit spread: 5
 
 ## Research Notice
 
