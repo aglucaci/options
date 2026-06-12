@@ -1,23 +1,23 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-06-11_20-00-42
+- Run timestamp: 2026-06-12_16-33-26
 - Rows scanned: 132
-- Valid signals: 0
-- Debit signals: 0
+- Valid signals: 1
+- Debit signals: 1
 - Credit signals: 0
-- Rejected rows: 132
+- Rejected rows: 131
 
 ## Top Ranked Signals
 
-No valid signals.
+| ticker | spread | dte | spread_mid | max_profit | max_loss | reward_risk | pop | risk_adjusted_score | signal_reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TLT | debit | 98 | 0.71 | 4.29 | 0.71 | 6.042253521126761 | 0.33658788117334204 | 0.6400588982009812 | Bullish pullback: EMA setup met, liquid quotes: short OI 21492, long OI 17212, bid/ask 9.1%/2.2%, regime accepted. |
 
 ## Top Rejection Reasons
 
-- setup not met: 124
-- market regime blocks bearish credit spread: 5
-- short leg bid/ask too wide (22.9%>15.0%): 1
-- short leg illiquid (vol=5, oi=64): 1
-- short leg illiquid (vol=16, oi=74): 1
+- setup not met: 129
+- market regime blocks bearish credit spread: 1
+- short leg illiquid (vol=20, oi=20): 1
 
 ## Research Notice
 
