@@ -1,10 +1,10 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-06-15_18-13-08
+- Run timestamp: 2026-06-16_18-23-17
 - Rows scanned: 478
 - Valid signals: 0
-- Watchlist setups: 47
-- Near-miss setups: 52
+- Watchlist setups: 37
+- Near-miss setups: 50
 - Debit signals: 0
 - Credit signals: 0
 - Rejected rows: 478
@@ -15,24 +15,24 @@ No valid signals.
 
 ## Top Rejection Reasons
 
-- setup_score_below_near_miss_threshold: 89
-- near_miss setup; below option evaluation threshold: 52
-- watchlist setup; below option evaluation threshold: 47
-- no options expirations found: 19
+- setup_score_below_near_miss_threshold: 103
+- near_miss setup; below option evaluation threshold: 50
+- watchlist setup; below option evaluation threshold: 37
+- no options expirations found: 18
 - no/insufficient daily data: 12
-- credit/width<20.0% (credit_width=15.8%): 2
-- spread mid/width too high (23.6%>20.0%): 2
-- credit/width<20.0% (credit_width=16.0%): 2
-- short leg illiquid (vol=2, oi=944): 2
-- short leg illiquid (vol=4, oi=5153): 2
+- short leg illiquid (vol=0, oi=1): 3
+- short leg bid<0.05 (bid=0.00): 3
+- short leg bid/ask too wide (28.6%>15.0%): 3
+- long leg bid<0.05 (bid=0.04): 2
+- short leg bid<0.05 (bid=0.02): 2
 
 ## Rejection Classes
 
-- LIQUIDITY_REJECT: 208
-- SETUP_REJECT: 188
-- PRICING_REJECT: 33
-- OPTION_CHAIN_REJECT: 19
-- RISK_REJECT: 18
+- LIQUIDITY_REJECT: 218
+- SETUP_REJECT: 190
+- RISK_REJECT: 23
+- OPTION_CHAIN_REJECT: 18
+- PRICING_REJECT: 17
 - DATA_REJECT: 12
 
 ## Research Notice
