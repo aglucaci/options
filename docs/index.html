@@ -269,6 +269,36 @@
       padding: 18px;
       border-radius: 8px;
     }
+    .trade-ticket {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 14px;
+    }
+    @media (max-width: 860px) { .trade-ticket { grid-template-columns: 1fr; } }
+    .ticket-main, .ticket-side {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+    .ticket-main { border-left: 5px solid var(--green); }
+    .ticket-title { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .ticket-title h3 { margin:0; font-size:22px; }
+    .ticket-legs { display:grid; gap:8px; margin:14px 0; }
+    .ticket-leg { display:grid; grid-template-columns:58px 1fr auto; gap:10px; align-items:center; padding:10px; background:var(--surface-2); border-radius:6px; }
+    .ticket-action { font-weight:900; color:var(--green); }
+    .ticket-action.sell { color:var(--red); }
+    .ticket-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    @media (max-width: 660px) { .ticket-stats { grid-template-columns:repeat(2,1fr); } }
+    .ticket-stat { padding:9px; background:#fbfcfe; border:1px solid var(--line); border-radius:6px; }
+    .ticket-stat .k { font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:700; }
+    .ticket-stat .v { margin-top:3px; font-family:var(--mono); font-weight:800; }
+    .order-line { padding:11px; border-radius:6px; background:#eefaf5; color:#075d43; font-weight:800; margin-top:12px; }
+    .warning { padding:11px; border-radius:6px; background:#fff8e8; color:#805713; font-size:12px; margin-top:10px; }
+    .detail-list { display:grid; gap:9px; font-size:13px; }
+    .detail-list div { padding-bottom:9px; border-bottom:1px solid var(--line); }
+    .detail-list div:last-child { border:0; padding-bottom:0; }
+    .risk-control { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
 
     .bars { display: grid; gap: 10px; }
     .bar-row {
@@ -415,11 +445,22 @@
         </div>
       </section>
 
-      <section class="span-8">
+      <section class="span-12">
         <div class="section-head">
           <div>
-            <h2>Today's Public Candidate Set</h2>
-            <p class="section-note">Sanitized view: structure categories and grades, not exact trade instructions.</p>
+            <h2>Top Trade Ticket</h2>
+            <p class="section-note">Highest-ranked valid signal. Confirm every quote in your broker before submitting.</p>
+          </div>
+          <span class="tag green" id="topTradeStatus">Loading</span>
+        </div>
+        <div class="section-body" id="topTrade"></div>
+      </section>
+
+      <section class="span-12">
+        <div class="section-head">
+          <div>
+            <h2>Today's Trade Candidates</h2>
+            <p class="section-note">Exact contracts and modeled order details from the latest research run.</p>
           </div>
           <button class="primary" id="reloadBtn">Reload data</button>
         </div>
@@ -452,14 +493,15 @@
             <thead>
               <tr>
                 <th>Ticker</th>
-                <th>Bias</th>
-                <th>Setup</th>
-                <th>Structure</th>
-                <th>DTE</th>
-                <th>Signal</th>
-                <th>Liquidity</th>
-                <th>Decision</th>
-                <th>Reason</th>
+                <th>Trade</th>
+                <th>Expiry</th>
+                <th>Buy</th>
+                <th>Sell</th>
+                <th>Limit</th>
+                <th>Max loss</th>
+                <th>Max profit</th>
+                <th>Breakeven</th>
+                <th>Score</th>
               </tr>
             </thead>
             <tbody id="candidateRows"></tbody>
@@ -546,9 +588,7 @@
               <div class="v" id="avgLongOi">0</div>
             </div>
           </div>
-          <p class="section-note" style="margin-top:12px;">
-            Fillability uses quote quality, open interest, volume, and bid/ask conditions. The public dashboard avoids exact live limit prices.
-          </p>
+          <p class="section-note" style="margin-top:12px;">Fillability uses quote quality, open interest, volume, and bid/ask conditions. Quotes are delayed snapshots; use a limit order and verify the live spread.</p>
         </div>
       </section>
 
@@ -581,7 +621,7 @@
             </div>
             <div>
               <h3>Risk filters</h3>
-              <p>The public layer excludes account sizing, broker data, order status, private scoring weights, and exact executable instructions.</p>
+              <p>Each ticket shows defined risk and a quantity based on your entered maximum loss. Broker buying power, commissions, and live fill conditions still apply.</p>
             </div>
           </div>
         </div>
@@ -636,6 +676,17 @@
       function fmtInt(value) {
         const n = Number(value || 0);
         return Number.isFinite(n) ? n.toLocaleString() : "0";
+      }
+
+      function money(value, scale = 1) {
+        const n = toNum(value);
+        if (n == null) return "—";
+        return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n * scale);
+      }
+
+      function pct(value) {
+        const n = toNum(value);
+        return n == null ? "—" : (n * 100).toFixed(1) + "%";
       }
 
       function fmtTime(value) {
@@ -786,6 +837,7 @@
         return [...unique.values()]
           .filter(row => decisionFor(row) !== "REJECT")
           .map(row => ({
+            raw: row,
             ticker: row.ticker || "",
             bias: bias(row),
             setup: row.setup_type || "EMA setup",
@@ -794,8 +846,77 @@
             signal: signalGrade(row),
             liquidity: liquidityGrade(row),
             decision: decisionFor(row),
-            reason: publicReason(row)
-          }));
+            reason: publicReason(row),
+            expiry: row.exp_date || row.exp_str || "",
+            longStrike: row.long_strike || "",
+            shortStrike: row.short_strike || "",
+            longSymbol: row.long_symbol || "",
+            shortSymbol: row.short_symbol || "",
+            entry: row.spread_mid || row.natural_price || "",
+            maxLoss: row.max_loss || "",
+            maxProfit: row.max_profit || "",
+            breakeven: row.breakeven || ""
+          }))
+          .sort((a, b) => (toNum(b.raw.risk_adjusted_score) || 0) - (toNum(a.raw.risk_adjusted_score) || 0));
+      }
+
+      function renderTopTrade() {
+        const row = state.candidates[0];
+        if (!row) {
+          $("topTradeStatus").textContent = "No trade";
+          $("topTradeStatus").className = "tag amber";
+          $("topTrade").innerHTML = '<div class="empty">There is no valid trade candidate in the latest run. Do not force a trade.</div>';
+          return;
+        }
+        const r = row.raw;
+        const isDebit = String(r.spread).toLowerCase() === "debit";
+        const orderType = isDebit ? "net debit" : "net credit";
+        const perSpreadRisk = (toNum(r.max_loss) || 0) * 100;
+        $("topTradeStatus").textContent = row.decision;
+        $("topTrade").innerHTML = `
+          <div class="trade-ticket">
+            <div class="ticket-main">
+              <div class="ticket-title"><h3>${esc(row.ticker)} ${esc(row.structure)}</h3><span class="tag green">${esc(row.bias)}</span><span class="tag blue">${esc(r.setup_tier || row.signal)}</span></div>
+              <div class="ticket-legs">
+                <div class="ticket-leg"><span class="ticket-action">BUY</span><strong>${esc(r.long_symbol || `${row.ticker} ${row.expiry} ${row.longStrike} call`)}</strong><span>bid ${money(r.long_bid)} / ask ${money(r.long_ask)}</span></div>
+                <div class="ticket-leg"><span class="ticket-action sell">SELL</span><strong>${esc(r.short_symbol || `${row.ticker} ${row.expiry} ${row.shortStrike} call`)}</strong><span>bid ${money(r.short_bid)} / ask ${money(r.short_ask)}</span></div>
+              </div>
+              <div class="order-line">Open ${esc(row.expiry)} ${esc(row.longStrike)}/${esc(row.shortStrike)} call spread at ${money(row.entry)} ${orderType} or better — LIMIT order only.</div>
+              <div class="ticket-stats" style="margin-top:12px">
+                <div class="ticket-stat"><div class="k">Expiration / DTE</div><div class="v">${esc(row.expiry)} / ${esc(r.dte)}</div></div>
+                <div class="ticket-stat"><div class="k">Cost / max loss</div><div class="v">${money(r.max_loss, 100)}</div></div>
+                <div class="ticket-stat"><div class="k">Max profit</div><div class="v">${money(r.max_profit, 100)}</div></div>
+                <div class="ticket-stat"><div class="k">Breakeven</div><div class="v">${money(r.breakeven)}</div></div>
+                <div class="ticket-stat"><div class="k">Probability</div><div class="v">${pct(r.pop)}</div></div>
+                <div class="ticket-stat"><div class="k">Reward / risk</div><div class="v">${toNum(r.reward_risk)?.toFixed(2) || "—"}×</div></div>
+                <div class="ticket-stat"><div class="k">Take profit</div><div class="v">${money(r.tp_spread_px)}</div></div>
+                <div class="ticket-stat"><div class="k">Stop price</div><div class="v">${money(r.sl_spread_px)}</div></div>
+              </div>
+              <div class="warning">Snapshot only: verify the underlying price, both leg quotes, expiration, strikes, and net limit in your broker. Do not use a market order.</div>
+            </div>
+            <div class="ticket-side">
+              <div class="detail-list">
+                <div><strong>Why it qualified</strong><br>${esc(row.reason)}</div>
+                <div><strong>Entry rule</strong><br>${esc(r.entry_rule || "Enter only while the setup remains valid.")}</div>
+                <div><strong>Exit plan</strong><br>${esc(r.exit_rule || "Use the modeled profit target, stop, and time stop.")}</div>
+                <div><strong>Liquidity</strong><br>Grade ${esc(row.liquidity)} · long OI ${fmtInt(r.long_oi)} / vol ${fmtInt(r.long_vol)} · short OI ${fmtInt(r.short_oi)} / vol ${fmtInt(r.short_vol)}</div>
+                <div><strong>Underlying</strong><br>Snapshot ${money(r.spot)} · EMA21 invalidation ${money(r.ema21_invalidation)}</div>
+              </div>
+              <div class="risk-control">
+                <div><label for="riskBudget">Maximum loss budget</label><input id="riskBudget" type="number" min="0" step="50" value="500"></div>
+                <div class="ticket-stat"><div class="k">Quantity</div><div class="v" id="tradeQty">—</div></div>
+              </div>
+              <p class="section-note" id="sizingNote" style="margin-top:8px"></p>
+            </div>
+          </div>`;
+        const updateQty = () => {
+          const budget = toNum($("riskBudget").value) || 0;
+          const qty = perSpreadRisk > 0 ? Math.floor(budget / perSpreadRisk) : 0;
+          $("tradeQty").textContent = qty ? qty + (qty === 1 ? " spread" : " spreads") : "0 spreads";
+          $("sizingNote").textContent = qty ? `Modeled maximum loss: ${money(qty * perSpreadRisk)} before fees.` : `Budget is below the ${money(perSpreadRisk)} modeled loss for one spread.`;
+        };
+        $("riskBudget").addEventListener("input", updateQty);
+        updateQty();
       }
 
       function renderBars(id, items, total) {
@@ -835,20 +956,21 @@
             (!structure || row.structure === structure);
         });
         if (!rows.length) {
-          $("candidateRows").innerHTML = `<tr><td colspan="9"><div class="empty">No public candidates today. The system scanned the universe and rejected all rows that failed current research filters.</div></td></tr>`;
+          $("candidateRows").innerHTML = `<tr><td colspan="10"><div class="empty">No trade candidates today. The system rejected all rows that failed current filters.</div></td></tr>`;
           return rows;
         }
         $("candidateRows").innerHTML = rows.map(row => `
           <tr>
             <td class="mono"><strong>${esc(row.ticker)}</strong></td>
-            <td>${esc(row.bias)}</td>
-            <td>${esc(row.setup)}</td>
             <td>${esc(row.structure)}</td>
-            <td class="mono">${esc(row.dte)}</td>
+            <td class="mono">${esc(row.expiry)}<br><span class="muted">${esc(row.raw.dte)} DTE</span></td>
+            <td class="mono"><strong>${esc(row.longStrike)} C</strong><br><span class="muted">${esc(row.longSymbol)}</span></td>
+            <td class="mono"><strong>${esc(row.shortStrike)} C</strong><br><span class="muted">${esc(row.shortSymbol)}</span></td>
+            <td class="mono">${money(row.entry)} ${String(row.raw.spread).toLowerCase() === "credit" ? "cr" : "db"}</td>
+            <td class="mono">${money(row.maxLoss, 100)}</td>
+            <td class="mono">${money(row.maxProfit, 100)}</td>
+            <td class="mono">${money(row.breakeven)}</td>
             <td><span class="tag blue">${esc(row.signal)}</span></td>
-            <td><span class="tag ${row.liquidity === "A" ? "green" : row.liquidity === "N/A" ? "amber" : "blue"}">${esc(row.liquidity)}</span></td>
-            <td><span class="tag ${row.decision === "CANDIDATE" ? "green" : row.decision === "WATCH" ? "amber" : "blue"}">${esc(row.decision)}</span></td>
-            <td>${esc(row.reason)}</td>
           </tr>
         `).join("");
         return rows;
@@ -915,7 +1037,7 @@
       }
 
       function downloadRows(rows) {
-        const cols = ["ticker", "bias", "setup", "structure", "dte", "signal", "liquidity", "decision", "reason"];
+        const cols = ["ticker", "bias", "setup", "structure", "expiry", "longStrike", "shortStrike", "longSymbol", "shortSymbol", "entry", "maxLoss", "maxProfit", "breakeven", "signal", "liquidity", "decision", "reason"];
         const lines = [cols.join(",")].concat(rows.map(row => cols.map(col => {
           const value = String(row[col] ?? "");
           return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
@@ -969,6 +1091,7 @@
 
         renderRegime([...state.today, ...state.rejected]);
         renderCandidateFilters();
+        renderTopTrade();
         renderCandidates();
         renderRejections();
         const decisionItems = [
