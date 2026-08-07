@@ -1,41 +1,42 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-08-05_17-52-47
+- Run timestamp: 2026-08-07_14-37-34
 - Rows scanned: 478
-- Valid signals: 1
-- Watchlist setups: 62
-- Near-miss setups: 48
+- Valid signals: 2
+- Watchlist setups: 51
+- Near-miss setups: 51
 - Debit signals: 1
-- Credit signals: 0
-- Rejected rows: 477
+- Credit signals: 1
+- Rejected rows: 476
 
 ## Top Ranked Signals
 
 | ticker | spread | setup_family | setup_score | setup_tier | dte | spread_mid | max_profit | max_loss | reward_risk | pop | risk_adjusted_score | signal_reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| TLT | debit | bull_ema8_reclaim | 9 | valid_setup | 86 | 0.855 | 4.145 | 0.855 | 4.847953216374268 | 0.33304043472928424 | 0.634988201801339 | Bullish pullback: EMA setup met, liquid quotes: short OI 560, long OI 422, bid/ask 5.7%/1.9%, regime accepted. |
+| BBAI | debit | bull_ema8_pullback | 13 | strong_setup | 133 | 0.16499999999999998 | 0.835 | 0.16499999999999998 | 5.060606060606061 | 0.2237934767497527 | 0.5590758961152205 | Bullish pullback: EMA setup met, liquid quotes: short OI 4893, long OI 4097, bid/ask 11.3%/4.7%, regime accepted. |
+| META | credit | bear_ema8_rejection | 15 | strong_setup | 105 | 1.0 | 1.0 | 4.0 | 0.25 | 0.7959882282456873 | 0.5331380997207353 | Bearish pullup: EMA setup met, liquid quotes: short OI 994, long OI 151, bid/ask 5.0%/6.3%, regime accepted. |
 
 ## Top Rejection Reasons
 
-- setup_score_below_near_miss_threshold: 67
-- watchlist setup; below option evaluation threshold: 62
-- near_miss setup; below option evaluation threshold: 48
-- no options expirations found: 15
+- setup_score_below_near_miss_threshold: 68
+- near_miss setup; below option evaluation threshold: 51
+- watchlist setup; below option evaluation threshold: 51
+- no options expirations found: 17
 - no/insufficient daily data: 14
-- short leg illiquid (vol=1, oi=1): 3
-- short leg illiquid (vol=2, oi=6): 3
-- spread mid/width too high (32.7%>20.0%): 2
-- short leg illiquid (vol=1, oi=16): 2
-- spread mid/width too high (32.8%>20.0%): 2
+- short leg illiquid (vol=0, oi=1): 3
+- short leg illiquid (vol=2, oi=2): 3
+- short leg illiquid (vol=1, oi=14): 2
+- short leg illiquid (vol=0, oi=5): 2
+- short leg illiquid (vol=4, oi=1133): 2
 
 ## Rejection Classes
 
-- LIQUIDITY_REJECT: 235
-- SETUP_REJECT: 177
-- PRICING_REJECT: 22
-- OPTION_CHAIN_REJECT: 16
+- LIQUIDITY_REJECT: 264
+- SETUP_REJECT: 170
+- OPTION_CHAIN_REJECT: 17
 - DATA_REJECT: 14
-- RISK_REJECT: 13
+- PRICING_REJECT: 9
+- RISK_REJECT: 2
 
 ## Research Notice
 
