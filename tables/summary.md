@@ -1,42 +1,41 @@
 # Daily EMA Options Research Summary
 
-- Run timestamp: 2026-08-07_14-37-34
+- Run timestamp: 2026-08-07_15-31-36
 - Rows scanned: 478
-- Valid signals: 2
-- Watchlist setups: 51
-- Near-miss setups: 51
+- Valid signals: 1
+- Watchlist setups: 45
+- Near-miss setups: 53
 - Debit signals: 1
-- Credit signals: 1
-- Rejected rows: 476
+- Credit signals: 0
+- Rejected rows: 477
 
 ## Top Ranked Signals
 
 | ticker | spread | setup_family | setup_score | setup_tier | dte | spread_mid | max_profit | max_loss | reward_risk | pop | risk_adjusted_score | signal_reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| BBAI | debit | bull_ema8_pullback | 13 | strong_setup | 133 | 0.16499999999999998 | 0.835 | 0.16499999999999998 | 5.060606060606061 | 0.2237934767497527 | 0.5590758961152205 | Bullish pullback: EMA setup met, liquid quotes: short OI 4893, long OI 4097, bid/ask 11.3%/4.7%, regime accepted. |
-| META | credit | bear_ema8_rejection | 15 | strong_setup | 105 | 1.0 | 1.0 | 4.0 | 0.25 | 0.7959882282456873 | 0.5331380997207353 | Bearish pullup: EMA setup met, liquid quotes: short OI 994, long OI 151, bid/ask 5.0%/6.3%, regime accepted. |
+| BBAI | debit | bull_ema8_pullback | 12 | strong_setup | 133 | 0.175 | 0.825 | 0.175 | 4.714285714285714 | 0.22940942640176754 | 0.5467984819356352 | Bullish pullback: EMA setup met, liquid quotes: short OI 4893, long OI 4097, bid/ask 11.3%/4.5%, regime accepted. |
 
 ## Top Rejection Reasons
 
-- setup_score_below_near_miss_threshold: 68
-- near_miss setup; below option evaluation threshold: 51
-- watchlist setup; below option evaluation threshold: 51
-- no options expirations found: 17
+- setup_score_below_near_miss_threshold: 71
+- near_miss setup; below option evaluation threshold: 53
+- watchlist setup; below option evaluation threshold: 45
+- no options expirations found: 18
 - no/insufficient daily data: 14
+- short leg illiquid (vol=1, oi=20): 3
+- short leg illiquid (vol=1, oi=7): 3
 - short leg illiquid (vol=0, oi=1): 3
-- short leg illiquid (vol=2, oi=2): 3
+- short leg illiquid (vol=20, oi=292): 2
 - short leg illiquid (vol=1, oi=14): 2
-- short leg illiquid (vol=0, oi=5): 2
-- short leg illiquid (vol=4, oi=1133): 2
 
 ## Rejection Classes
 
-- LIQUIDITY_REJECT: 264
-- SETUP_REJECT: 170
-- OPTION_CHAIN_REJECT: 17
+- LIQUIDITY_REJECT: 251
+- SETUP_REJECT: 169
+- PRICING_REJECT: 22
+- OPTION_CHAIN_REJECT: 18
 - DATA_REJECT: 14
-- PRICING_REJECT: 9
-- RISK_REJECT: 2
+- RISK_REJECT: 3
 
 ## Research Notice
 
